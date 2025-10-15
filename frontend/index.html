@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evemind</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <!-- Left Side - Brand -->
+        <div class="login-brand">
+            <img src="assets/erasebg-transformed.png" alt="Evemind Logo" class="login-brand-logo">
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="login-card">
+            <div class="login-header">
+                <h2>Bem-vindo</h2>
+                <p>Acesse sua conta para continuar</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="empresa">Empresa</label>
+                    <select id="empresa" required>
+                        <option value=""></option>
+                        <option value="1">Condomínio Residencial Jardim</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn-primary">Entrar</button>
+                <a href="#" class="forgot-password" onclick="sistema.showForgotPassword(); return false;">Esqueceu a senha?</a>
+            </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="app-container" style="display: none;">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/erasebg-transformed.png" alt="Evemind Logo" class="sidebar-logo">
+            </div>
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-section="dashboard">
+                    <span>
+                        <i class="fas fa-home"></i>
+                        Dashboard
+                    </span>
+                </li>
+                <li class="menu-item" data-section="moradores">
+                    <span>
+                        <i class="fas fa-users"></i>
+                        Moradores
+                    </span>
+                </li>
+                <li class="menu-item" data-section="unidades">
+                    <span>
+                        <i class="fas fa-building"></i>
+                        Unidades
+                    </span>
+                </li>
+                <li class="menu-item" data-section="prestadores">
+                    <span>
+                        <i class="fas fa-tools"></i>
+                        Prestadores
+                    </span>
+                </li>
+                <li class="menu-item" data-section="reservas">
+                    <span>
+                        <i class="fas fa-calendar-alt"></i>
+                        Reservas
+                    </span>
+                </li>
+                <li class="menu-item" data-section="ordem-servico">
+                    <span>
+                        <i class="fas fa-clipboard-list"></i>
+                        Ordem de Serviço
+                    </span>
+                </li>
+                <li class="menu-item" data-section="visitantes">
+                    <span>
+                        <i class="fas fa-user-friends"></i>
+                        Visitantes
+                    </span>
+                </li>
+                <li class="menu-item" data-section="patrimonio">
+                    <span>
+                        <i class="fas fa-boxes"></i>
+                        Patrimônio
+                    </span>
+                </li>
+                <li class="menu-item" data-section="avisos">
+                    <span>
+                        <i class="fas fa-bullhorn"></i>
+                        Avisos
+                    </span>
+                </li>
+                <li class="menu-item" data-section="quadro-avisos">
+                    <span>
+                        <i class="fas fa-newspaper"></i>
+                        Quadro de Avisos
+                    </span>
+                </li>
+                <li class="menu-item" data-section="emails">
+                    <span>
+                        <i class="fas fa-envelope"></i>
+                        E-mails
+                    </span>
+                </li>
+                <li class="menu-item" data-section="ocorrencias">
+                    <span>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Ocorrências
+                    </span>
+                </li>
+                <li class="menu-item" data-section="auditoria">
+                    <span>
+                        <i class="fas fa-shield-alt"></i>
+                        Auditoria
+                    </span>
+                </li>
+                <li class="menu-item" data-section="usuarios">
+                    <span>
+                        <i class="fas fa-user-cog"></i>
+                        Usuários
+                    </span>
+                </li>
+                <li class="menu-item" data-section="permissoes">
+                    <span>
+                        <i class="fas fa-key"></i>
+                        Permissões
+                    </span>
+                </li>
+                <li class="menu-item" data-section="empresas">
+                    <span>
+                        <i class="fas fa-industry"></i>
+                        Empresas
+                    </span>
+                </li>
+            </ul>
+            <div class="sidebar-spacer"></div>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sair</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <!-- Hero Header -->
+                <div class="dashboard-hero">
+                    <div class="hero-content">
+                        <h1>Bem-vindo ao Evemind</h1>
+                        <p>Gerencie seu condomínio de forma simples e eficiente</p>
+                    </div>
+                    <button class="btn-refresh" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="stats-modern">
+                    <div class="stat-modern">
+                        <div class="stat-modern-header">
+                            <i class="fas fa-users"></i>
+                            <span class="stat-label">Moradores</span>
+                        </div>
+                        <div class="stat-modern-value" id="totalMoradores">0</div>
+                        <div class="stat-modern-footer">Cadastrados no sistema</div>
+                    </div>
+                    
+                    <div class="stat-modern">
+                        <div class="stat-modern-header">
+                            <i class="fas fa-bullhorn"></i>
+                            <span class="stat-label">Avisos</span>
+                        </div>
+                        <div class="stat-modern-value" id="totalAvisos">0</div>
+                        <div class="stat-modern-footer">Ativos no momento</div>
+                    </div>
+                    
+                    <div class="stat-modern">
+                        <div class="stat-modern-header">
+                            <i class="fas fa-calendar-check"></i>
+                            <span class="stat-label">Reservas</span>
+                        </div>
+                        <div class="stat-modern-value" id="totalReservas">0</div>
+                        <div class="stat-modern-footer">Agendadas para hoje</div>
+                    </div>
+                    
+                    <div class="stat-modern">
+                        <div class="stat-modern-header">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span class="stat-label">Ocorrências</span>
+                        </div>
+                        <div class="stat-modern-value" id="totalOcorrencias">0</div>
+                        <div class="stat-modern-footer">Pendentes de resolução</div>
+                    </div>
+                </div>
+
+                <!-- Main Dashboard Layout -->
+                <div class="dashboard-layout">
+                    <!-- Left Column -->
+                    <div class="dashboard-col-left">
+                        <!-- Últimos Avisos -->
+                        <div class="modern-card">
+                            <div class="modern-card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <h3>Últimos Avisos</h3>
+                                </div>
+                                <span class="card-badge" id="badgeAvisos">0</span>
+                            </div>
+                            <div class="modern-card-body" id="recentAvisos">
+                                <div class="empty-state-small">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>Nenhum aviso recente</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Próximas Reservas -->
+                        <div class="modern-card">
+                            <div class="modern-card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <h3>Próximas Reservas</h3>
+                                </div>
+                                <span class="card-badge" id="badgeReservas">0</span>
+                            </div>
+                            <div class="modern-card-body" id="upcomingReservas">
+                                <div class="empty-state-small">
+                                    <i class="fas fa-calendar-times"></i>
+                                    <p>Nenhuma reserva próxima</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="dashboard-col-right">
+                        <!-- Ações Rápidas -->
+                        <div class="modern-card quick-actions-card">
+                            <div class="modern-card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-bolt"></i>
+                                    <h3>Ações Rápidas</h3>
+                                </div>
+                            </div>
+                            <div class="modern-card-body">
+                                <div class="quick-actions-modern">
+                                    <button class="quick-action-modern" onclick="openMoradorModal()">
+                                        <div class="quick-action-icon">
+                                            <i class="fas fa-user-plus"></i>
+                                        </div>
+                                        <span>Novo Morador</span>
+                                    </button>
+                                    
+                                    <button class="quick-action-modern" onclick="openAvisoModal()">
+                                        <div class="quick-action-icon">
+                                            <i class="fas fa-bullhorn"></i>
+                                        </div>
+                                        <span>Novo Aviso</span>
+                                    </button>
+                                    
+                                    <button class="quick-action-modern" onclick="openReservaModal()">
+                                        <div class="quick-action-icon">
+                                            <i class="fas fa-calendar-plus"></i>
+                                        </div>
+                                        <span>Nova Reserva</span>
+                                    </button>
+                                    
+                                    <button class="quick-action-modern" onclick="openOcorrenciaModal()">
+                                        <div class="quick-action-icon">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <span>Nova Ocorrência</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estatísticas Rápidas -->
+                        <div class="modern-card">
+                            <div class="modern-card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    <h3>Resumo Mensal</h3>
+                                </div>
+                            </div>
+                            <div class="modern-card-body">
+                                <div class="stats-list">
+                                    <div class="stats-list-item">
+                                        <span class="stats-list-label">Novos moradores</span>
+                                        <span class="stats-list-value">+3</span>
+                                    </div>
+                                    <div class="stats-list-item">
+                                        <span class="stats-list-label">Avisos publicados</span>
+                                        <span class="stats-list-value">12</span>
+                                    </div>
+                                    <div class="stats-list-item">
+                                        <span class="stats-list-label">Reservas realizadas</span>
+                                        <span class="stats-list-value">45</span>
+                                    </div>
+                                    <div class="stats-list-item">
+                                        <span class="stats-list-label">Ocorrências resolvidas</span>
+                                        <span class="stats-list-value">8</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Moradores Section -->
+            <section id="moradores" class="content-section">
+                <div class="section-header">
+                    <h1>Moradores</h1>
+                    <button class="btn-primary" onclick="openMoradorModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo Morador
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Apartamento</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="moradoresTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Avisos Section -->
+            <section id="avisos" class="content-section">
+                <div class="section-header">
+                    <h1>Avisos</h1>
+                    <button class="btn-primary" onclick="openAvisoModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo Aviso
+                    </button>
+                </div>
+                
+                <div class="avisos-grid" id="avisosGrid">
+                    <!-- Avisos serão carregados aqui -->
+                </div>
+            </section>
+
+            <!-- Reservas Section -->
+            <section id="reservas" class="content-section">
+                <div class="section-header">
+                    <h1>Reservas</h1>
+                    <button class="btn-primary" onclick="openReservaModal()">
+                        <i class="fas fa-plus"></i>
+                        Nova Reserva
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Área</th>
+                                <th>Morador</th>
+                                <th>Data</th>
+                                <th>Horário</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservasTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Ocorrências Section -->
+            <section id="ocorrencias" class="content-section">
+                <div class="section-header">
+                    <h1>Ocorrências</h1>
+                    <button class="btn-primary" onclick="openOcorrenciaModal()">
+                        <i class="fas fa-plus"></i>
+                        Nova Ocorrência
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th>Morador</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ocorrenciasTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Unidades Section -->
+            <section id="unidades" class="content-section">
+                <div class="section-header">
+                    <h1>Unidades</h1>
+                    <button class="btn-primary" onclick="openUnidadeModal()">
+                        <i class="fas fa-plus"></i>
+                        Nova Unidade
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Bloco</th>
+                                <th>Andar</th>
+                                <th>Tipo</th>
+                                <th>Morador Principal</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unidadesTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Prestadores Section -->
+            <section id="prestadores" class="content-section">
+                <div class="section-header">
+                    <h1>Prestadores</h1>
+                    <button class="btn-primary" onclick="openPrestadorModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo Prestador
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Empresa</th>
+                                <th>Serviço</th>
+                                <th>Telefone</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prestadoresTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Ordem de Serviço Section -->
+            <section id="ordem-servico" class="content-section">
+                <div class="section-header">
+                    <h1>Ordem de Serviço</h1>
+                    <button class="btn-primary" onclick="openOrdemServicoModal()">
+                        <i class="fas fa-plus"></i>
+                        Nova Ordem
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th>Unidade</th>
+                                <th>Prestador</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordemServicoTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Visitantes Section -->
+            <section id="visitantes" class="content-section">
+                <div class="section-header">
+                    <h1>Controle de Visitantes</h1>
+                    <button class="btn-primary" onclick="openVisitanteModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo Visitante
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Documento</th>
+                                <th>Unidade</th>
+                                <th>Data Entrada</th>
+                                <th>Data Saída</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visitantesTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Patrimônio Section -->
+            <section id="patrimonio" class="content-section">
+                <div class="section-header">
+                    <h1>Patrimônio</h1>
+                    <button class="btn-primary" onclick="openPatrimonioModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo Item
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                                <th>Localização</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="patrimonioTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Quadro de Avisos Section -->
+            <section id="quadro-avisos" class="content-section">
+                <div class="section-header">
+                    <h1>Quadro de Avisos</h1>
+                    <button class="btn-primary" onclick="openQuadroAvisoModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo Aviso
+                    </button>
+                </div>
+                
+                <div class="avisos-grid" id="quadroAvisosGrid">
+                    <!-- Avisos do quadro serão carregados aqui -->
+                </div>
+            </section>
+
+            <!-- E-mails Section -->
+            <section id="emails" class="content-section">
+                <div class="section-header">
+                    <h1>E-mails</h1>
+                    <button class="btn-primary" onclick="openEmailModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo E-mail
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Assunto</th>
+                                <th>Destinatário</th>
+                                <th>Data Envio</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="emailsTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Auditoria Section -->
+            <section id="auditoria" class="content-section">
+                <div class="section-header">
+                    <h1>Auditoria</h1>
+                    <div class="header-actions">
+                        <button class="btn-secondary" onclick="exportAuditLog()">
+                            <i class="fas fa-download"></i>
+                            Exportar
+                        </button>
+                        <button class="btn-secondary" onclick="refreshAuditLog()">
+                            <i class="fas fa-sync-alt"></i>
+                            Atualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Data/Hora</th>
+                                <th>Usuário</th>
+                                <th>Ação</th>
+                                <th>Tabela</th>
+                                <th>Registro</th>
+                                <th>IP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="auditoriaTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Usuários Section -->
+            <section id="usuarios" class="content-section">
+                <div class="section-header">
+                    <h1>Usuários</h1>
+                    <button class="btn-primary" onclick="openUsuarioModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo Usuário
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Função</th>
+                                <th>Empresa</th>
+                                <th>Status</th>
+                                <th>Último Acesso</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usuariosTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Permissões Section -->
+            <section id="permissoes" class="content-section">
+                <div class="section-header">
+                    <h1>Controle de Permissões</h1>
+                    <button class="btn-primary" onclick="openPermissaoModal()">
+                        <i class="fas fa-plus"></i>
+                        Nova Permissão
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Função</th>
+                                <th>Módulo</th>
+                                <th>Permissões</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="permissoesTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Empresas Section -->
+            <section id="empresas" class="content-section">
+                <div class="section-header">
+                    <h1>Empresas</h1>
+                    <button class="btn-primary" onclick="openEmpresaModal()">
+                        <i class="fas fa-plus"></i>
+                        Nova Empresa
+                    </button>
+                </div>
+                
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CNPJ</th>
+                                <th>Endereço</th>
+                                <th>Telefone</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="empresasTable">
+                            <!-- Dados serão carregados aqui -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modalOverlay" class="modal-overlay">
+        <!-- Morador Modal -->
+        <div id="moradorModal" class="modal">
+            <div class="modal-header">
+                <h3>Novo Morador</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="moradorForm" class="modal-form">
+                <div class="form-group">
+                    <label for="moradorNome">Nome</label>
+                    <input type="text" id="moradorNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="moradorApartamento">Apartamento</label>
+                    <input type="text" id="moradorApartamento" required>
+                </div>
+                <div class="form-group">
+                    <label for="moradorEmail">Email</label>
+                    <input type="email" id="moradorEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="moradorTelefone">Telefone</label>
+                    <input type="tel" id="moradorTelefone" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Aviso Modal -->
+        <div id="avisoModal" class="modal">
+            <div class="modal-header">
+                <h3>Novo Aviso</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="avisoForm" class="modal-form">
+                <div class="form-group">
+                    <label for="avisoTitulo">Título</label>
+                    <input type="text" id="avisoTitulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="avisoDescricao">Descrição</label>
+                    <textarea id="avisoDescricao" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="avisoPrioridade">Prioridade</label>
+                    <select id="avisoPrioridade" required>
+                        <option value="baixa">Baixa</option>
+                        <option value="media">Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Publicar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Reserva Modal -->
+        <div id="reservaModal" class="modal">
+            <div class="modal-header">
+                <h3>Nova Reserva</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="reservaForm" class="modal-form">
+                <div class="form-group">
+                    <label for="reservaArea">Área</label>
+                    <select id="reservaArea" required>
+                        <option value="">Selecione uma área</option>
+                        <option value="salao-festas">Salão de Festas</option>
+                        <option value="churrasqueira">Churrasqueira</option>
+                        <option value="piscina">Piscina</option>
+                        <option value="quadra">Quadra</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reservaMorador">Morador</label>
+                    <select id="reservaMorador" required>
+                        <option value="">Selecione um morador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reservaData">Data</label>
+                    <input type="date" id="reservaData" required>
+                </div>
+                <div class="form-group">
+                    <label for="reservaHorario">Horário</label>
+                    <input type="time" id="reservaHorario" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Reservar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Ocorrência Modal -->
+        <div id="ocorrenciaModal" class="modal">
+            <div class="modal-header">
+                <h3>Nova Ocorrência</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="ocorrenciaForm" class="modal-form">
+                <div class="form-group">
+                    <label for="ocorrenciaTipo">Tipo</label>
+                    <select id="ocorrenciaTipo" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="barulho">Barulho</option>
+                        <option value="limpeza">Limpeza</option>
+                        <option value="seguranca">Segurança</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ocorrenciaDescricao">Descrição</label>
+                    <textarea id="ocorrenciaDescricao" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="ocorrenciaMorador">Morador</label>
+                    <select id="ocorrenciaMorador" required>
+                        <option value="">Selecione um morador</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Registrar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Unidade Modal -->
+        <div id="unidadeModal" class="modal">
+            <div class="modal-header">
+                <h3>Nova Unidade</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="unidadeForm" class="modal-form">
+                <div class="form-group">
+                    <label for="unidadeNumero">Número</label>
+                    <input type="text" id="unidadeNumero" required>
+                </div>
+                <div class="form-group">
+                    <label for="unidadeBloco">Bloco</label>
+                    <input type="text" id="unidadeBloco" required>
+                </div>
+                <div class="form-group">
+                    <label for="unidadeAndar">Andar</label>
+                    <input type="number" id="unidadeAndar" required>
+                </div>
+                <div class="form-group">
+                    <label for="unidadeTipo">Tipo</label>
+                    <select id="unidadeTipo" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="apartamento">Apartamento</option>
+                        <option value="cobertura">Cobertura</option>
+                        <option value="loja">Loja</option>
+                        <option value="vaga">Vaga de Garagem</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="unidadeMorador">Morador Principal</label>
+                    <select id="unidadeMorador">
+                        <option value="">Selecione um morador</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Prestador Modal -->
+        <div id="prestadorModal" class="modal">
+            <div class="modal-header">
+                <h3>Novo Prestador</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="prestadorForm" class="modal-form">
+                <div class="form-group">
+                    <label for="prestadorNome">Nome</label>
+                    <input type="text" id="prestadorNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="prestadorEmpresa">Empresa</label>
+                    <input type="text" id="prestadorEmpresa" required>
+                </div>
+                <div class="form-group">
+                    <label for="prestadorServico">Serviço</label>
+                    <select id="prestadorServico" required>
+                        <option value="">Selecione o serviço</option>
+                        <option value="limpeza">Limpeza</option>
+                        <option value="manutencao">Manutenção</option>
+                        <option value="seguranca">Segurança</option>
+                        <option value="jardinagem">Jardinagem</option>
+                        <option value="piscina">Piscina</option>
+                        <option value="elevador">Elevador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="prestadorTelefone">Telefone</label>
+                    <input type="tel" id="prestadorTelefone" required>
+                </div>
+                <div class="form-group">
+                    <label for="prestadorEmail">Email</label>
+                    <input type="email" id="prestadorEmail">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Ordem de Serviço Modal -->
+        <div id="ordemServicoModal" class="modal">
+            <div class="modal-header">
+                <h3>Nova Ordem de Serviço</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="ordemServicoForm" class="modal-form">
+                <div class="form-group">
+                    <label for="ordemTipo">Tipo</label>
+                    <select id="ordemTipo" required>
+                        <option value="">Selecione o tipo</option>
+                        <option value="manutencao">Manutenção</option>
+                        <option value="reparo">Reparo</option>
+                        <option value="limpeza">Limpeza</option>
+                        <option value="instalacao">Instalação</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ordemDescricao">Descrição</label>
+                    <textarea id="ordemDescricao" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="ordemUnidade">Unidade</label>
+                    <select id="ordemUnidade" required>
+                        <option value="">Selecione uma unidade</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ordemPrestador">Prestador</label>
+                    <select id="ordemPrestador" required>
+                        <option value="">Selecione um prestador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="ordemData">Data</label>
+                    <input type="date" id="ordemData" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Criar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Visitante Modal -->
+        <div id="visitanteModal" class="modal">
+            <div class="modal-header">
+                <h3>Novo Visitante</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="visitanteForm" class="modal-form">
+                <div class="form-group">
+                    <label for="visitanteNome">Nome</label>
+                    <input type="text" id="visitanteNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="visitanteDocumento">Documento</label>
+                    <input type="text" id="visitanteDocumento" required>
+                </div>
+                <div class="form-group">
+                    <label for="visitanteUnidade">Unidade</label>
+                    <select id="visitanteUnidade" required>
+                        <option value="">Selecione uma unidade</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="visitanteDataEntrada">Data de Entrada</label>
+                    <input type="datetime-local" id="visitanteDataEntrada" required>
+                </div>
+                <div class="form-group">
+                    <label for="visitanteDataSaida">Data de Saída</label>
+                    <input type="datetime-local" id="visitanteDataSaida">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Registrar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Patrimônio Modal -->
+        <div id="patrimonioModal" class="modal">
+            <div class="modal-header">
+                <h3>Novo Item do Patrimônio</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="patrimonioForm" class="modal-form">
+                <div class="form-group">
+                    <label for="patrimonioCodigo">Código</label>
+                    <input type="text" id="patrimonioCodigo" required>
+                </div>
+                <div class="form-group">
+                    <label for="patrimonioDescricao">Descrição</label>
+                    <input type="text" id="patrimonioDescricao" required>
+                </div>
+                <div class="form-group">
+                    <label for="patrimonioCategoria">Categoria</label>
+                    <select id="patrimonioCategoria" required>
+                        <option value="">Selecione a categoria</option>
+                        <option value="mobiliario">Mobiliário</option>
+                        <option value="eletronico">Eletrônico</option>
+                        <option value="equipamento">Equipamento</option>
+                        <option value="veiculo">Veículo</option>
+                        <option value="ferramenta">Ferramenta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="patrimonioLocalizacao">Localização</label>
+                    <input type="text" id="patrimonioLocalizacao" required>
+                </div>
+                <div class="form-group">
+                    <label for="patrimonioValor">Valor (R$)</label>
+                    <input type="number" id="patrimonioValor" step="0.01" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Quadro de Avisos Modal -->
+        <div id="quadroAvisoModal" class="modal">
+            <div class="modal-header">
+                <h3>Novo Aviso do Quadro</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="quadroAvisoForm" class="modal-form">
+                <div class="form-group">
+                    <label for="quadroTitulo">Título</label>
+                    <input type="text" id="quadroTitulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="quadroDescricao">Descrição</label>
+                    <textarea id="quadroDescricao" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="quadroCategoria">Categoria</label>
+                    <select id="quadroCategoria" required>
+                        <option value="">Selecione a categoria</option>
+                        <option value="geral">Geral</option>
+                        <option value="evento">Evento</option>
+                        <option value="manutencao">Manutenção</option>
+                        <option value="regulamento">Regulamento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="quadroDataInicio">Data de Início</label>
+                    <input type="date" id="quadroDataInicio" required>
+                </div>
+                <div class="form-group">
+                    <label for="quadroDataFim">Data de Fim</label>
+                    <input type="date" id="quadroDataFim" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Publicar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- E-mail Modal -->
+        <div id="emailModal" class="modal">
+            <div class="modal-header">
+                <h3>Novo E-mail</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="emailForm" class="modal-form">
+                <div class="form-group">
+                    <label for="emailAssunto">Assunto</label>
+                    <input type="text" id="emailAssunto" required>
+                </div>
+                <div class="form-group">
+                    <label for="emailDestinatario">Destinatário</label>
+                    <select id="emailDestinatario" required>
+                        <option value="">Selecione o destinatário</option>
+                        <option value="todos">Todos os Moradores</option>
+                        <option value="administracao">Administração</option>
+                        <option value="sindico">Síndico</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="emailConteudo">Conteúdo</label>
+                    <textarea id="emailConteudo" rows="6" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="emailPrioridade">Prioridade</label>
+                    <select id="emailPrioridade" required>
+                        <option value="normal">Normal</option>
+                        <option value="alta">Alta</option>
+                        <option value="urgente">Urgente</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Enviar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Usuário Modal -->
+        <div id="usuarioModal" class="modal">
+            <div class="modal-header">
+                <h3>Novo Usuário</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="usuarioForm" class="modal-form">
+                <div class="form-group">
+                    <label for="usuarioNome">Nome</label>
+                    <input type="text" id="usuarioNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="usuarioEmail">Email</label>
+                    <input type="email" id="usuarioEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="usuarioFuncao">Função</label>
+                    <select id="usuarioFuncao" required>
+                        <option value="">Selecione a função</option>
+                        <option value="admin">Administrador</option>
+                        <option value="sindico">Síndico</option>
+                        <option value="zelador">Zelador</option>
+                        <option value="portaria">Portaria</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="usuarioEmpresa">Empresa</label>
+                    <select id="usuarioEmpresa" required>
+                        <option value="">Selecione uma empresa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="usuarioSenha">Senha</label>
+                    <input type="password" id="usuarioSenha" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Criar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Permissão Modal -->
+        <div id="permissaoModal" class="modal">
+            <div class="modal-header">
+                <h3>Nova Permissão</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="permissaoForm" class="modal-form">
+                <div class="form-group">
+                    <label for="permissaoFuncao">Função</label>
+                    <select id="permissaoFuncao" required>
+                        <option value="">Selecione a função</option>
+                        <option value="admin">Administrador</option>
+                        <option value="sindico">Síndico</option>
+                        <option value="zelador">Zelador</option>
+                        <option value="portaria">Portaria</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="permissaoModulo">Módulo</label>
+                    <select id="permissaoModulo" required>
+                        <option value="">Selecione o módulo</option>
+                        <option value="moradores">Moradores</option>
+                        <option value="avisos">Avisos</option>
+                        <option value="reservas">Reservas</option>
+                        <option value="ocorrencias">Ocorrências</option>
+                        <option value="usuarios">Usuários</option>
+                        <option value="auditoria">Auditoria</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Permissões</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="permissaoVisualizar"> Visualizar</label>
+                        <label><input type="checkbox" id="permissaoCriar"> Criar</label>
+                        <label><input type="checkbox" id="permissaoEditar"> Editar</label>
+                        <label><input type="checkbox" id="permissaoExcluir"> Excluir</label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Empresa Modal -->
+        <div id="empresaModal" class="modal">
+            <div class="modal-header">
+                <h3>Nova Empresa</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form id="empresaForm" class="modal-form">
+                <div class="form-group">
+                    <label for="empresaNome">Nome</label>
+                    <input type="text" id="empresaNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="empresaCnpj">CNPJ</label>
+                    <input type="text" id="empresaCnpj" required>
+                </div>
+                <div class="form-group">
+                    <label for="empresaEndereco">Endereço</label>
+                    <input type="text" id="empresaEndereco" required>
+                </div>
+                <div class="form-group">
+                    <label for="empresaTelefone">Telefone</label>
+                    <input type="tel" id="empresaTelefone" required>
+                </div>
+                <div class="form-group">
+                    <label for="empresaEmail">Email</label>
+                    <input type="email" id="empresaEmail">
+                </div>
+                <div class="form-group">
+                    <label for="empresaResponsavel">Responsável</label>
+                    <input type="text" id="empresaResponsavel" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../scripts/script.js"></script>
+</body>
+</html>
+
