@@ -1,0 +1,166 @@
+{
+  "moradores": [
+    {
+      "id": 1,
+      "nome": "João Silva",
+      "apartamento": "101",
+      "bloco": "A",
+      "telefone": "(11) 11111-1111",
+      "email": "joao@email.com",
+      "dataEntrada": "2023-01-15",
+      "ativo": true,
+      "createdAt": "2025-10-20T19:43:52.371Z",
+      "updatedAt": "2025-10-20T19:43:52.649Z"
+    },
+    {
+      "id": 2,
+      "nome": "Teste Silva",
+      "apartamento": "999",
+      "bloco": "Z",
+      "telefone": "(11) 00000-0000",
+      "email": "teste@email.com",
+      "dataEntrada": "2023-12-01",
+      "ativo": true,
+      "createdAt": "2025-10-20T19:43:52.543Z",
+      "updatedAt": "2025-10-20T19:43:52.543Z"
+    }
+  ],
+  "avisos": [
+    {
+      "id": 1,
+      "titulo": "Manutenção do Elevador",
+      "conteudo": "O elevador do bloco A passará por manutenção preventiva no dia 15/12/2023.",
+      "dataInicio": "2023-12-10",
+      "dataFim": "2023-12-20",
+      "prioridade": "alta",
+      "ativo": true,
+      "createdAt": "2025-10-20T19:43:52.475Z",
+      "updatedAt": "2025-10-20T19:43:52.475Z"
+    },
+    {
+      "id": 2,
+      "titulo": "Teste de Sistema",
+      "conteudo": "Este é um aviso de teste do sistema de banco de dados interno.",
+      "dataInicio": "2023-12-01",
+      "dataFim": "2023-12-31",
+      "prioridade": "baixa",
+      "ativo": true,
+      "createdAt": "2025-10-20T19:43:52.716Z",
+      "updatedAt": "2025-10-20T19:43:52.716Z"
+    }
+  ],
+  "reservas": [
+    {
+      "id": 1,
+      "moradorId": 1,
+      "espaco": "Salão de Festas",
+      "dataReserva": "2023-12-25",
+      "horarioInicio": "19:00",
+      "horarioFim": "23:00",
+      "status": "confirmada",
+      "observacoes": "Festa de Natal",
+      "createdAt": "2025-10-20T19:43:52.475Z",
+      "updatedAt": "2025-10-20T19:43:52.475Z"
+    }
+  ],
+  "ocorrencias": [
+    {
+      "id": 1,
+      "moradorId": 1,
+      "tipo": "manutencao",
+      "descricao": "Vazamento no banheiro",
+      "prioridade": "alta",
+      "status": "aberta",
+      "dataOcorrencia": "2023-12-01",
+      "dataResolucao": null,
+      "createdAt": "2025-10-20T19:43:52.475Z",
+      "updatedAt": "2025-10-20T19:43:52.475Z"
+    }
+  ],
+  "usuarios": [
+    {
+      "id": 1,
+      "nome": "Administrador",
+      "email": "admin@evemind.com",
+      "senha": "$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+      "tipo": "admin",
+      "ativo": true,
+      "createdAt": "2025-10-20T19:43:52.475Z",
+      "updatedAt": "2025-10-20T19:43:52.475Z"
+    }
+  ],
+  "empresas": [
+    {
+      "id": 1,
+      "nome": "Empresa de Limpeza ABC",
+      "cnpj": "12.345.678/0001-90",
+      "telefone": "(11) 3333-4444",
+      "email": "contato@empresaabc.com",
+      "servico": "Limpeza",
+      "ativo": true,
+      "createdAt": "2025-10-20T19:43:52.475Z",
+      "updatedAt": "2025-10-20T19:43:52.475Z"
+    }
+  ],
+  "permissoes": [
+    {
+      "id": 1,
+      "nome": "Gerenciar Moradores",
+      "codigo": "MORADORES_CRUD",
+      "descricao": "Permite criar, editar e excluir moradores",
+      "ativo": true,
+      "createdAt": "2025-10-20T19:43:52.475Z",
+      "updatedAt": "2025-10-20T19:43:52.475Z"
+    }
+  ],
+  "auditoria": [
+    {
+      "id": 1,
+      "usuarioId": 1,
+      "acao": "CREATE",
+      "tabela": "moradores",
+      "registroId": 1,
+      "dadosAntigos": null,
+      "dadosNovos": "{\"nome\":\"João Silva\",\"apartamento\":\"101\"}",
+      "ip": "127.0.0.1",
+      "userAgent": "Mozilla/5.0...",
+      "createdAt": "2025-10-20T19:43:52.476Z"
+    },
+    {
+      "id": 2,
+      "usuarioId": 1,
+      "acao": "CREATE",
+      "tabela": "moradores",
+      "registroId": 2,
+      "dadosAntigos": null,
+      "dadosNovos": "{\"id\":2,\"nome\":\"Teste Silva\",\"apartamento\":\"999\",\"bloco\":\"Z\",\"telefone\":\"(11) 00000-0000\",\"email\":\"teste@email.com\",\"dataEntrada\":\"2023-12-01\",\"ativo\":true,\"createdAt\":\"2025-10-20T19:43:52.543Z\",\"updatedAt\":\"2025-10-20T19:43:52.543Z\"}",
+      "ip": "127.0.0.1",
+      "userAgent": "Sistema Interno",
+      "createdAt": "2025-10-20T19:43:52.553Z"
+    },
+    {
+      "id": 3,
+      "usuarioId": 1,
+      "acao": "UPDATE",
+      "tabela": "moradores",
+      "registroId": 1,
+      "dadosAntigos": "{\"id\":1,\"nome\":\"João Silva\",\"apartamento\":\"101\",\"bloco\":\"A\",\"telefone\":\"(11) 99999-9999\",\"email\":\"joao@email.com\",\"dataEntrada\":\"2023-01-15\",\"ativo\":true,\"createdAt\":\"2025-10-20T19:43:52.371Z\",\"updatedAt\":\"2025-10-20T19:43:52.475Z\"}",
+      "dadosNovos": "{\"id\":1,\"nome\":\"João Silva\",\"apartamento\":\"101\",\"bloco\":\"A\",\"telefone\":\"(11) 11111-1111\",\"email\":\"joao@email.com\",\"dataEntrada\":\"2023-01-15\",\"ativo\":true,\"createdAt\":\"2025-10-20T19:43:52.371Z\",\"updatedAt\":\"2025-10-20T19:43:52.649Z\"}",
+      "ip": "127.0.0.1",
+      "userAgent": "Sistema Interno",
+      "createdAt": "2025-10-20T19:43:52.668Z"
+    },
+    {
+      "id": 4,
+      "usuarioId": 1,
+      "acao": "CREATE",
+      "tabela": "avisos",
+      "registroId": 2,
+      "dadosAntigos": null,
+      "dadosNovos": "{\"id\":2,\"titulo\":\"Teste de Sistema\",\"conteudo\":\"Este é um aviso de teste do sistema de banco de dados interno.\",\"dataInicio\":\"2023-12-01\",\"dataFim\":\"2023-12-31\",\"prioridade\":\"baixa\",\"ativo\":true,\"createdAt\":\"2025-10-20T19:43:52.716Z\",\"updatedAt\":\"2025-10-20T19:43:52.716Z\"}",
+      "ip": "127.0.0.1",
+      "userAgent": "Sistema Interno",
+      "createdAt": "2025-10-20T19:43:52.726Z"
+    }
+  ]
+}

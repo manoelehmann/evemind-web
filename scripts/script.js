@@ -29,6 +29,22 @@ class CondominioSystem {
                     email: "pedro.oliveira@email.com",
                     telefone: "(11) 77777-7777",
                     status: "ativo"
+                },
+                {
+                    id: 4,
+                    nome: "Ana Paula",
+                    apartamento: "404",
+                    email: "ana.paula@email.com",
+                    telefone: "(11) 96666-6666",
+                    status: "ativo"
+                },
+                {
+                    id: 5,
+                    nome: "Carlos Eduardo",
+                    apartamento: "505",
+                    email: "carlos.eduardo@email.com",
+                    telefone: "(11) 95555-5555",
+                    status: "ativo"
                 }
             ],
             avisos: [
@@ -339,6 +355,17 @@ class CondominioSystem {
             this.handleEmpresaSubmit();
         });
 
+        // Filtros de busca simples
+        const moradoresSearch = document.getElementById('moradoresSearch');
+        if (moradoresSearch) {
+            moradoresSearch.addEventListener('input', () => this.loadMoradores());
+        }
+
+        const reservasSearch = document.getElementById('reservasSearch');
+        if (reservasSearch) {
+            reservasSearch.addEventListener('input', () => this.loadReservas());
+        }
+
         // Modal close buttons
         document.querySelectorAll('.modal-close').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -521,7 +548,20 @@ class CondominioSystem {
         const tbody = document.getElementById('moradoresTable');
         tbody.innerHTML = '';
 
-        this.data.moradores.forEach(morador => {
+        // Filtro de busca (nome, apartamento ou e-mail)
+        const searchInput = document.getElementById('moradoresSearch');
+        const term = searchInput ? searchInput.value.toLowerCase() : '';
+
+        const moradoresFiltrados = this.data.moradores.filter(morador => {
+            if (!term) return true;
+            return (
+                morador.nome.toLowerCase().includes(term) ||
+                morador.apartamento.toLowerCase().includes(term) ||
+                morador.email.toLowerCase().includes(term)
+            );
+        });
+
+        moradoresFiltrados.forEach(morador => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${morador.nome}</td>
@@ -585,7 +625,21 @@ class CondominioSystem {
         const tbody = document.getElementById('reservasTable');
         tbody.innerHTML = '';
 
-        this.data.reservas.forEach(reserva => {
+        // Filtro de busca (área, morador ou data)
+        const searchInput = document.getElementById('reservasSearch');
+        const term = searchInput ? searchInput.value.toLowerCase() : '';
+
+        const reservasFiltradas = this.data.reservas.filter(reserva => {
+            if (!term) return true;
+            const dataFormatada = this.formatDate(reserva.data).toLowerCase();
+            return (
+                this.getAreaName(reserva.area).toLowerCase().includes(term) ||
+                reserva.morador.toLowerCase().includes(term) ||
+                dataFormatada.includes(term)
+            );
+        });
+
+        reservasFiltradas.forEach(reserva => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${this.getAreaName(reserva.area)}</td>
@@ -1028,11 +1082,15 @@ class CondominioSystem {
     }
 
     openModal(modalId) {
-        // Fechar todos os modais primeiro
-        this.closeModal();
-        
-        // Abrir o modal específico
+        // Apenas garante que o overlay esteja visível
         document.getElementById('modalOverlay').classList.add('active');
+
+        // Esconde todos os outros modais sem limpar formulários
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.style.display = 'none';
+        });
+
+        // Abre o modal específico
         const modal = document.getElementById(modalId);
         if (modal) {
             modal.style.display = 'block';
@@ -1086,8 +1144,33 @@ class CondominioSystem {
 
     // Funções de população de selects
     populateUnidadeSelects() {
-        const selects = ['unidadeMorador', 'ordemUnidade', 'visitanteUnidade'];
-        selects.forEach(selectId => {
+        // Morador Principal da unidade deve listar apenas moradores
+        // que ainda NÃO possuem unidade vinculada (para cadastro de novas unidades)
+        const moradorSelect = document.getElementById('unidadeMorador');
+        if (moradorSelect) {
+            moradorSelect.innerHTML = '<option value="">Selecione um morador</option>';
+
+            // Conjunto de moradores já vinculados a alguma unidade
+            const moradoresComUnidade = new Set(
+                this.data.unidades
+                    .filter(u => u.moradorId != null)
+                    .map(u => u.moradorId)
+            );
+
+            this.data.moradores.forEach(morador => {
+                // Só mostra moradores sem unidade
+                if (!moradoresComUnidade.has(morador.id)) {
+                    const option = document.createElement('option');
+                    option.value = morador.id;
+                    option.textContent = `${morador.nome} - Apt ${morador.apartamento}`;
+                    moradorSelect.appendChild(option);
+                }
+            });
+        }
+
+        // Campos que realmente são de unidade (ordem de serviço e visitante)
+        const unidadeSelectIds = ['ordemUnidade', 'visitanteUnidade'];
+        unidadeSelectIds.forEach(selectId => {
             const select = document.getElementById(selectId);
             if (select) {
                 select.innerHTML = '<option value="">Selecione uma unidade</option>';
@@ -1145,8 +1228,8 @@ class CondominioSystem {
                     nome: document.getElementById('moradorNome').value,
                     apartamento: document.getElementById('moradorApartamento').value,
                     email: document.getElementById('moradorEmail').value,
-                    telefone: document.getElementById('moradorTelefone').value,
-                    status: document.getElementById('moradorStatus').value
+                    telefone: document.getElementById('moradorTelefone').value
+                    // status permanece o mesmo (não existe campo de status no modal)
                 };
                 this.showNotification('Morador atualizado com sucesso!', 'success');
             }
@@ -1219,8 +1302,8 @@ class CondominioSystem {
                     morador: morador.nome,
                     moradorId: moradorId,
                     data: document.getElementById('reservaData').value,
-                    horario: document.getElementById('reservaHorario').value,
-                    status: document.getElementById('reservaStatus').value
+                    horario: document.getElementById('reservaHorario').value
+                    // status permanece o mesmo (não existe campo de status no modal)
                 };
                 this.showNotification('Reserva atualizada com sucesso!', 'success');
             }
@@ -1259,9 +1342,8 @@ class CondominioSystem {
                     tipo: document.getElementById('ocorrenciaTipo').value,
                     descricao: document.getElementById('ocorrenciaDescricao').value,
                     morador: morador.nome,
-                    moradorId: moradorId,
-                    data: document.getElementById('ocorrenciaData').value,
-                    status: document.getElementById('ocorrenciaStatus').value
+                    moradorId: moradorId
+                    // data e status permanecem os mesmos (não existem campos no modal)
                 };
                 this.showNotification('Ocorrência atualizada com sucesso!', 'success');
             }
@@ -1303,8 +1385,8 @@ class CondominioSystem {
                     andar: parseInt(document.getElementById('unidadeAndar').value),
                     tipo: document.getElementById('unidadeTipo').value,
                     moradorPrincipal: morador ? morador.nome : null,
-                    moradorId: moradorId || null,
-                    status: document.getElementById('unidadeStatus').value
+                    moradorId: moradorId || null
+                    // status permanece o mesmo (não existe campo de status no modal)
                 };
                 this.showNotification('Unidade atualizada com sucesso!', 'success');
             }
@@ -1338,10 +1420,11 @@ class CondominioSystem {
                 this.data.prestadores[index] = {
                     ...this.data.prestadores[index],
                     nome: document.getElementById('prestadorNome').value,
+                    empresa: document.getElementById('prestadorEmpresa').value,
                     servico: document.getElementById('prestadorServico').value,
                     telefone: document.getElementById('prestadorTelefone').value,
-                    email: document.getElementById('prestadorEmail').value,
-                    status: document.getElementById('prestadorStatus').value
+                    email: document.getElementById('prestadorEmail').value
+                    // status permanece o mesmo (não existe campo de status no modal)
                 };
                 this.showNotification('Prestador atualizado com sucesso!', 'success');
             }
@@ -1352,6 +1435,7 @@ class CondominioSystem {
             const prestador = {
                 id: this.data.prestadores.length + 1,
                 nome: document.getElementById('prestadorNome').value,
+                empresa: document.getElementById('prestadorEmpresa').value,
                 servico: document.getElementById('prestadorServico').value,
                 telefone: document.getElementById('prestadorTelefone').value,
                 email: document.getElementById('prestadorEmail').value,
@@ -1425,9 +1509,9 @@ class CondominioSystem {
                     documento: document.getElementById('visitanteDocumento').value,
                     unidade: unidade ? unidade.numero : '',
                     unidadeId: unidadeId,
-                    data: document.getElementById('visitanteData').value,
-                    horario: document.getElementById('visitanteHorario').value,
-                    autorizadoPor: document.getElementById('visitanteAutorizadoPor').value
+                    dataEntrada: document.getElementById('visitanteDataEntrada').value,
+                    dataSaida: document.getElementById('visitanteDataSaida').value || null,
+                    status: document.getElementById('visitanteDataSaida').value ? 'saido' : 'presente'
                 };
                 this.showNotification('Visitante atualizado com sucesso!', 'success');
             }
@@ -1459,12 +1543,12 @@ class CondominioSystem {
             if (index !== -1) {
                 this.data.patrimonio[index] = {
                     ...this.data.patrimonio[index],
-                    nome: document.getElementById('patrimonioNome').value,
+                    codigo: document.getElementById('patrimonioCodigo').value,
+                    descricao: document.getElementById('patrimonioDescricao').value,
                     categoria: document.getElementById('patrimonioCategoria').value,
-                    local: document.getElementById('patrimonioLocal').value,
-                    dataAquisicao: document.getElementById('patrimonioDataAquisicao').value,
-                    valor: parseFloat(document.getElementById('patrimonioValor').value),
-                    status: document.getElementById('patrimonioStatus').value
+                    localizacao: document.getElementById('patrimonioLocalizacao').value,
+                    valor: parseFloat(document.getElementById('patrimonioValor').value)
+                    // status permanece o mesmo (não existe campo de status no modal)
                 };
                 this.showNotification('Patrimônio atualizado com sucesso!', 'success');
             }
@@ -1496,11 +1580,11 @@ class CondominioSystem {
             if (index !== -1) {
                 this.data.quadroAvisos[index] = {
                     ...this.data.quadroAvisos[index],
-                    titulo: document.getElementById('quadroAvisoTitulo').value,
-                    conteudo: document.getElementById('quadroAvisoConteudo').value,
-                    dataInicio: document.getElementById('quadroAvisoDataInicio').value,
-                    dataFim: document.getElementById('quadroAvisoDataFim').value,
-                    local: document.getElementById('quadroAvisoLocal').value
+                    titulo: document.getElementById('quadroTitulo').value,
+                    descricao: document.getElementById('quadroDescricao').value,
+                    categoria: document.getElementById('quadroCategoria').value,
+                    dataInicio: document.getElementById('quadroDataInicio').value,
+                    dataFim: document.getElementById('quadroDataFim').value
                 };
                 this.showNotification('Quadro de avisos atualizado com sucesso!', 'success');
             }
@@ -1532,12 +1616,12 @@ class CondominioSystem {
             if (index !== -1) {
                 this.data.emails[index] = {
                     ...this.data.emails[index],
-                    destinatarios: document.getElementById('emailDestinatarios').value,
                     assunto: document.getElementById('emailAssunto').value,
-                    mensagem: document.getElementById('emailMensagem').value,
+                    destinatario: document.getElementById('emailDestinatario').value,
+                    conteudo: document.getElementById('emailConteudo').value,
                     prioridade: document.getElementById('emailPrioridade').value
                 };
-                this.showNotification('Email atualizado com sucesso!', 'success');
+                this.showNotification('E-mail atualizado com sucesso!', 'success');
             }
             this.editingId = null;
             this.editingType = null;
@@ -1572,10 +1656,10 @@ class CondominioSystem {
                     ...this.data.usuarios[index],
                     nome: document.getElementById('usuarioNome').value,
                     email: document.getElementById('usuarioEmail').value,
-                    perfil: document.getElementById('usuarioPerfil').value,
+                    funcao: document.getElementById('usuarioFuncao').value,
                     empresa: empresa ? empresa.nome : '',
-                    empresaId: empresaId,
-                    status: document.getElementById('usuarioStatus').value
+                    empresaId: empresaId
+                    // status permanece o mesmo (não existe campo de status no modal)
                 };
                 // Atualizar senha apenas se foi fornecida
                 const senha = document.getElementById('usuarioSenha').value;
@@ -1607,10 +1691,10 @@ class CondominioSystem {
 
     handlePermissaoSubmit() {
         const permissoes = [];
-        if (document.getElementById('permissaoAcaoVisualizar').checked) permissoes.push('visualizar');
-        if (document.getElementById('permissaoAcaoCriar').checked) permissoes.push('criar');
-        if (document.getElementById('permissaoAcaoEditar').checked) permissoes.push('editar');
-        if (document.getElementById('permissaoAcaoExcluir').checked) permissoes.push('excluir');
+        if (document.getElementById('permissaoVisualizar').checked) permissoes.push('visualizar');
+        if (document.getElementById('permissaoCriar').checked) permissoes.push('criar');
+        if (document.getElementById('permissaoEditar').checked) permissoes.push('editar');
+        if (document.getElementById('permissaoExcluir').checked) permissoes.push('excluir');
 
         if (this.editingId && this.editingType === 'permissao') {
             // Modo edição
@@ -1618,10 +1702,9 @@ class CondominioSystem {
             if (index !== -1) {
                 this.data.permissoes[index] = {
                     ...this.data.permissoes[index],
-                    nome: document.getElementById('permissaoNome').value,
-                    descricao: document.getElementById('permissaoDescricao').value,
+                    funcao: document.getElementById('permissaoFuncao').value,
                     modulo: document.getElementById('permissaoModulo').value,
-                    acoes: permissoes
+                    permissoes: permissoes
                 };
                 this.showNotification('Permissão atualizada com sucesso!', 'success');
             }
@@ -1652,11 +1735,12 @@ class CondominioSystem {
                 this.data.empresas[index] = {
                     ...this.data.empresas[index],
                     nome: document.getElementById('empresaNome').value,
-                    cnpj: document.getElementById('empresaCNPJ').value,
+                    cnpj: document.getElementById('empresaCnpj').value,
                     endereco: document.getElementById('empresaEndereco').value,
                     telefone: document.getElementById('empresaTelefone').value,
                     email: document.getElementById('empresaEmail').value,
-                    status: document.getElementById('empresaStatus').value
+                    responsavel: document.getElementById('empresaResponsavel').value
+                    // status permanece o mesmo (não existe campo de status no modal)
                 };
                 this.showNotification('Empresa atualizada com sucesso!', 'success');
             }
@@ -1814,7 +1898,6 @@ class CondominioSystem {
         document.getElementById('moradorApartamento').value = morador.apartamento;
         document.getElementById('moradorEmail').value = morador.email;
         document.getElementById('moradorTelefone').value = morador.telefone;
-        document.getElementById('moradorStatus').value = morador.status;
         
         document.querySelector('#moradorModal .modal-header h3').textContent = 'Editar Morador';
         this.openModal('moradorModal');
@@ -1846,7 +1929,6 @@ class CondominioSystem {
         document.getElementById('reservaMorador').value = reserva.moradorId;
         document.getElementById('reservaData').value = reserva.data;
         document.getElementById('reservaHorario').value = reserva.horario;
-        document.getElementById('reservaStatus').value = reserva.status;
         
         document.querySelector('#reservaModal .modal-header h3').textContent = 'Editar Reserva';
         this.openModal('reservaModal');
@@ -1862,8 +1944,6 @@ class CondominioSystem {
         document.getElementById('ocorrenciaTipo').value = ocorrencia.tipo;
         document.getElementById('ocorrenciaDescricao').value = ocorrencia.descricao;
         document.getElementById('ocorrenciaMorador').value = ocorrencia.moradorId;
-        document.getElementById('ocorrenciaData').value = ocorrencia.data;
-        document.getElementById('ocorrenciaStatus').value = ocorrencia.status;
         
         document.querySelector('#ocorrenciaModal .modal-header h3').textContent = 'Editar Ocorrência';
         this.openModal('ocorrenciaModal');
@@ -1881,7 +1961,6 @@ class CondominioSystem {
         document.getElementById('unidadeAndar').value = unidade.andar;
         document.getElementById('unidadeTipo').value = unidade.tipo;
         document.getElementById('unidadeMorador').value = unidade.moradorId;
-        document.getElementById('unidadeStatus').value = unidade.status;
         
         document.querySelector('#unidadeModal .modal-header h3').textContent = 'Editar Unidade';
         this.openModal('unidadeModal');
@@ -1895,10 +1974,10 @@ class CondominioSystem {
         this.editingType = 'prestador';
         
         document.getElementById('prestadorNome').value = prestador.nome;
+        document.getElementById('prestadorEmpresa').value = prestador.empresa;
         document.getElementById('prestadorServico').value = prestador.servico;
         document.getElementById('prestadorTelefone').value = prestador.telefone;
         document.getElementById('prestadorEmail').value = prestador.email;
-        document.getElementById('prestadorStatus').value = prestador.status;
         
         document.querySelector('#prestadorModal .modal-header h3').textContent = 'Editar Prestador';
         this.openModal('prestadorModal');
@@ -1932,9 +2011,8 @@ class CondominioSystem {
         document.getElementById('visitanteNome').value = visitante.nome;
         document.getElementById('visitanteDocumento').value = visitante.documento;
         document.getElementById('visitanteUnidade').value = visitante.unidadeId;
-        document.getElementById('visitanteData').value = visitante.data;
-        document.getElementById('visitanteHorario').value = visitante.horario;
-        document.getElementById('visitanteAutorizadoPor').value = visitante.autorizadoPor;
+        document.getElementById('visitanteDataEntrada').value = visitante.dataEntrada;
+        document.getElementById('visitanteDataSaida').value = visitante.dataSaida || '';
         
         document.querySelector('#visitanteModal .modal-header h3').textContent = 'Editar Visitante';
         this.openModal('visitanteModal');
@@ -1947,12 +2025,11 @@ class CondominioSystem {
         this.editingId = id;
         this.editingType = 'patrimonio';
         
-        document.getElementById('patrimonioNome').value = patrimonio.nome;
+        document.getElementById('patrimonioCodigo').value = patrimonio.codigo;
+        document.getElementById('patrimonioDescricao').value = patrimonio.descricao;
         document.getElementById('patrimonioCategoria').value = patrimonio.categoria;
-        document.getElementById('patrimonioLocal').value = patrimonio.local;
-        document.getElementById('patrimonioDataAquisicao').value = patrimonio.dataAquisicao;
+        document.getElementById('patrimonioLocalizacao').value = patrimonio.localizacao;
         document.getElementById('patrimonioValor').value = patrimonio.valor;
-        document.getElementById('patrimonioStatus').value = patrimonio.status;
         
         document.querySelector('#patrimonioModal .modal-header h3').textContent = 'Editar Patrimônio';
         this.openModal('patrimonioModal');
@@ -1965,11 +2042,11 @@ class CondominioSystem {
         this.editingId = id;
         this.editingType = 'quadroAviso';
         
-        document.getElementById('quadroAvisoTitulo').value = quadro.titulo;
-        document.getElementById('quadroAvisoConteudo').value = quadro.conteudo;
-        document.getElementById('quadroAvisoDataInicio').value = quadro.dataInicio;
-        document.getElementById('quadroAvisoDataFim').value = quadro.dataFim;
-        document.getElementById('quadroAvisoLocal').value = quadro.local;
+        document.getElementById('quadroTitulo').value = quadro.titulo;
+        document.getElementById('quadroDescricao').value = quadro.descricao;
+        document.getElementById('quadroCategoria').value = quadro.categoria;
+        document.getElementById('quadroDataInicio').value = quadro.dataInicio;
+        document.getElementById('quadroDataFim').value = quadro.dataFim;
         
         document.querySelector('#quadroAvisoModal .modal-header h3').textContent = 'Editar Quadro de Avisos';
         this.openModal('quadroAvisoModal');
@@ -1982,9 +2059,9 @@ class CondominioSystem {
         this.editingId = id;
         this.editingType = 'email';
         
-        document.getElementById('emailDestinatarios').value = email.destinatarios;
         document.getElementById('emailAssunto').value = email.assunto;
-        document.getElementById('emailMensagem').value = email.mensagem;
+        document.getElementById('emailDestinatario').value = email.destinatario;
+        document.getElementById('emailConteudo').value = email.conteudo;
         document.getElementById('emailPrioridade').value = email.prioridade;
         
         document.querySelector('#emailModal .modal-header h3').textContent = 'Editar Email';
@@ -2000,9 +2077,8 @@ class CondominioSystem {
         
         document.getElementById('usuarioNome').value = usuario.nome;
         document.getElementById('usuarioEmail').value = usuario.email;
-        document.getElementById('usuarioPerfil').value = usuario.perfil;
+        document.getElementById('usuarioFuncao').value = usuario.funcao;
         document.getElementById('usuarioEmpresa').value = usuario.empresaId;
-        document.getElementById('usuarioStatus').value = usuario.status;
         
         // Não preencher senha ao editar
         document.getElementById('usuarioSenha').value = '';
@@ -2018,15 +2094,14 @@ class CondominioSystem {
         this.editingId = id;
         this.editingType = 'permissao';
         
-        document.getElementById('permissaoNome').value = permissao.nome;
-        document.getElementById('permissaoDescricao').value = permissao.descricao;
+        document.getElementById('permissaoFuncao').value = permissao.funcao;
         document.getElementById('permissaoModulo').value = permissao.modulo;
         
         // Preencher checkboxes de ações
-        document.getElementById('permissaoAcaoVisualizar').checked = permissao.acoes.includes('visualizar');
-        document.getElementById('permissaoAcaoCriar').checked = permissao.acoes.includes('criar');
-        document.getElementById('permissaoAcaoEditar').checked = permissao.acoes.includes('editar');
-        document.getElementById('permissaoAcaoExcluir').checked = permissao.acoes.includes('excluir');
+        document.getElementById('permissaoVisualizar').checked = permissao.permissoes.includes('visualizar');
+        document.getElementById('permissaoCriar').checked = permissao.permissoes.includes('criar');
+        document.getElementById('permissaoEditar').checked = permissao.permissoes.includes('editar');
+        document.getElementById('permissaoExcluir').checked = permissao.permissoes.includes('excluir');
         
         document.querySelector('#permissaoModal .modal-header h3').textContent = 'Editar Permissão';
         this.openModal('permissaoModal');
@@ -2040,11 +2115,11 @@ class CondominioSystem {
         this.editingType = 'empresa';
         
         document.getElementById('empresaNome').value = empresa.nome;
-        document.getElementById('empresaCNPJ').value = empresa.cnpj;
+        document.getElementById('empresaCnpj').value = empresa.cnpj;
         document.getElementById('empresaEndereco').value = empresa.endereco;
         document.getElementById('empresaTelefone').value = empresa.telefone;
         document.getElementById('empresaEmail').value = empresa.email;
-        document.getElementById('empresaStatus').value = empresa.status;
+        document.getElementById('empresaResponsavel').value = empresa.responsavel;
         
         document.querySelector('#empresaModal .modal-header h3').textContent = 'Editar Empresa';
         this.openModal('empresaModal');

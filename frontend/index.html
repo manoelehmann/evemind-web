@@ -331,7 +331,12 @@
             <!-- Moradores Section -->
             <section id="moradores" class="content-section">
                 <div class="section-header">
-                    <h1>Moradores</h1>
+                    <div class="section-title-group">
+                        <h1>Moradores</h1>
+                        <div class="section-filters">
+                            <input type="text" id="moradoresSearch" class="input-search" placeholder="Buscar por nome, apartamento ou e-mail">
+                        </div>
+                    </div>
                     <button class="btn-primary" onclick="openMoradorModal()">
                         <i class="fas fa-plus"></i>
                         Novo Morador
@@ -375,7 +380,12 @@
             <!-- Reservas Section -->
             <section id="reservas" class="content-section">
                 <div class="section-header">
-                    <h1>Reservas</h1>
+                    <div class="section-title-group">
+                        <h1>Reservas</h1>
+                        <div class="section-filters">
+                            <input type="text" id="reservasSearch" class="input-search" placeholder="Buscar por área, morador ou data">
+                        </div>
+                    </div>
                     <button class="btn-primary" onclick="openReservaModal()">
                         <i class="fas fa-plus"></i>
                         Nova Reserva
@@ -1002,6 +1012,14 @@
                 <div class="form-group">
                     <label for="ordemData">Data</label>
                     <input type="date" id="ordemData" required>
+                </div>
+                <div class="form-group">
+                    <label for="ordemStatus">Status</label>
+                    <select id="ordemStatus" required>
+                        <option value="em_andamento">Em andamento</option>
+                        <option value="concluida">Concluída</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
