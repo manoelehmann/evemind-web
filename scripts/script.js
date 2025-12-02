@@ -259,6 +259,38 @@ class CondominioSystem {
         this.init();
     }
 
+    // Helper para chamadas à API
+    async apiCall(endpoint, method = 'GET', data = null) {
+        const baseURL = window.location.origin;
+        const url = `${baseURL}/api${endpoint}`;
+        
+        const options = {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+
+        if (data && (method === 'POST' || method === 'PUT')) {
+            options.body = JSON.stringify(data);
+        }
+
+        try {
+            const response = await fetch(url, options);
+            const result = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(result.message || 'Erro na requisição');
+            }
+            
+            return result;
+        } catch (error) {
+            console.error(`Erro na API ${endpoint}:`, error);
+            this.showNotification(`Erro: ${error.message}`, 'error');
+            throw error;
+        }
+    }
+
     init() {
         this.setupEventListeners();
         this.loadData();
@@ -544,122 +576,154 @@ class CondominioSystem {
         }
     }
 
-    loadMoradores() {
+    async loadMoradores() {
         const tbody = document.getElementById('moradoresTable');
-        tbody.innerHTML = '';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>';
 
-        // Filtro de busca (nome, apartamento ou e-mail)
-        const searchInput = document.getElementById('moradoresSearch');
-        const term = searchInput ? searchInput.value.toLowerCase() : '';
+        try {
+            const response = await this.apiCall('/moradores');
+            const moradores = response.data || response;
 
-        const moradoresFiltrados = this.data.moradores.filter(morador => {
-            if (!term) return true;
-            return (
-                morador.nome.toLowerCase().includes(term) ||
-                morador.apartamento.toLowerCase().includes(term) ||
-                morador.email.toLowerCase().includes(term)
-            );
-        });
+            // Filtro de busca (nome, apartamento ou e-mail)
+            const searchInput = document.getElementById('moradoresSearch');
+            const term = searchInput ? searchInput.value.toLowerCase() : '';
 
-        moradoresFiltrados.forEach(morador => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${morador.nome}</td>
-                <td>${morador.apartamento}</td>
-                <td>${morador.email}</td>
-                <td>${morador.telefone}</td>
-                <td><span class="status-badge status-${morador.status}">${morador.status}</span></td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="action-btn btn-edit" onclick="sistema.editMorador(${morador.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn btn-delete" onclick="sistema.deleteMorador(${morador.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
+            const moradoresFiltrados = moradores.filter(morador => {
+                if (!term) return true;
+                return (
+                    morador.nome.toLowerCase().includes(term) ||
+                    morador.apartamento.toLowerCase().includes(term) ||
+                    morador.email.toLowerCase().includes(term)
+                );
+            });
 
-    loadAvisos() {
-        const container = document.getElementById('avisosGrid');
-        container.innerHTML = '';
-
-        const avisosAtivos = this.data.avisos.filter(a => a.ativo);
-
-        if (avisosAtivos.length === 0) {
-            container.innerHTML = '<div class="empty-state"><i class="fas fa-bullhorn"></i><h3>Nenhum aviso</h3><p>Não há avisos publicados</p></div>';
-        } else {
-            avisosAtivos.forEach(aviso => {
-                const avisoElement = document.createElement('div');
-                avisoElement.className = `aviso-card ${aviso.prioridade}`;
-                avisoElement.innerHTML = `
-                    <div class="aviso-header">
-                        <div>
-                            <div class="aviso-titulo">${aviso.titulo}</div>
-                        </div>
-                        <span class="aviso-prioridade prioridade-${aviso.prioridade}">${aviso.prioridade}</span>
-                    </div>
-                    <div class="aviso-descricao">${aviso.descricao}</div>
-                    <div class="aviso-footer">
-                        <span>${this.formatDate(aviso.data)}</span>
+            tbody.innerHTML = '';
+            moradoresFiltrados.forEach(morador => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${morador.nome}</td>
+                    <td>${morador.apartamento}</td>
+                    <td>${morador.email}</td>
+                    <td>${morador.telefone}</td>
+                    <td><span class="status-badge status-${morador.status}">${morador.status}</span></td>
+                    <td>
                         <div class="action-buttons">
-                            <button class="action-btn btn-edit" onclick="sistema.editAviso(${aviso.id})">
+                            <button class="action-btn btn-edit" onclick="sistema.editMorador(${morador.id})">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="action-btn btn-delete" onclick="sistema.deleteAviso(${aviso.id})">
+                            <button class="action-btn btn-delete" onclick="sistema.deleteMorador(${morador.id})">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
-                    </div>
+                    </td>
                 `;
-                container.appendChild(avisoElement);
+                tbody.appendChild(row);
             });
+
+            // Atualizar dados locais para compatibilidade
+            this.data.moradores = moradores;
+        } catch (error) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Erro ao carregar moradores</td></tr>';
         }
     }
 
-    loadReservas() {
+    async loadAvisos() {
+        const container = document.getElementById('avisosGrid');
+        container.innerHTML = '<div class="empty-state">Carregando...</div>';
+
+        try {
+            const response = await this.apiCall('/avisos');
+            const avisos = response.data || response;
+            const avisosAtivos = avisos.filter(a => a.ativo);
+
+            container.innerHTML = '';
+            if (avisosAtivos.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-bullhorn"></i><h3>Nenhum aviso</h3><p>Não há avisos publicados</p></div>';
+            } else {
+                avisosAtivos.forEach(aviso => {
+                    const avisoElement = document.createElement('div');
+                    avisoElement.className = `aviso-card ${aviso.prioridade}`;
+                    avisoElement.innerHTML = `
+                        <div class="aviso-header">
+                            <div>
+                                <div class="aviso-titulo">${aviso.titulo}</div>
+                            </div>
+                            <span class="aviso-prioridade prioridade-${aviso.prioridade}">${aviso.prioridade}</span>
+                        </div>
+                        <div class="aviso-descricao">${aviso.descricao}</div>
+                        <div class="aviso-footer">
+                            <span>${this.formatDate(aviso.data)}</span>
+                            <div class="action-buttons">
+                                <button class="action-btn btn-edit" onclick="sistema.editAviso(${aviso.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-delete" onclick="sistema.deleteAviso(${aviso.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(avisoElement);
+                });
+            }
+
+            // Atualizar dados locais para compatibilidade
+            this.data.avisos = avisos;
+        } catch (error) {
+            container.innerHTML = '<div class="empty-state" style="color: red;">Erro ao carregar avisos</div>';
+        }
+    }
+
+    async loadReservas() {
         const tbody = document.getElementById('reservasTable');
-        tbody.innerHTML = '';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Carregando...</td></tr>';
 
-        // Filtro de busca (área, morador ou data)
-        const searchInput = document.getElementById('reservasSearch');
-        const term = searchInput ? searchInput.value.toLowerCase() : '';
+        try {
+            const response = await this.apiCall('/reservas');
+            const reservas = response.data || response;
 
-        const reservasFiltradas = this.data.reservas.filter(reserva => {
-            if (!term) return true;
-            const dataFormatada = this.formatDate(reserva.data).toLowerCase();
-            return (
-                this.getAreaName(reserva.area).toLowerCase().includes(term) ||
-                reserva.morador.toLowerCase().includes(term) ||
-                dataFormatada.includes(term)
-            );
-        });
+            // Filtro de busca (área, morador ou data)
+            const searchInput = document.getElementById('reservasSearch');
+            const term = searchInput ? searchInput.value.toLowerCase() : '';
 
-        reservasFiltradas.forEach(reserva => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${this.getAreaName(reserva.area)}</td>
-                <td>${reserva.morador}</td>
-                <td>${this.formatDate(reserva.data)}</td>
-                <td>${reserva.horario}</td>
-                <td><span class="status-badge status-${reserva.status}">${reserva.status}</span></td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="action-btn btn-edit" onclick="sistema.editReserva(${reserva.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn btn-delete" onclick="sistema.deleteReserva(${reserva.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+            const reservasFiltradas = reservas.filter(reserva => {
+                if (!term) return true;
+                const dataFormatada = this.formatDate(reserva.data).toLowerCase();
+                return (
+                    this.getAreaName(reserva.area).toLowerCase().includes(term) ||
+                    (reserva.morador || '').toLowerCase().includes(term) ||
+                    dataFormatada.includes(term)
+                );
+            });
+
+            tbody.innerHTML = '';
+            reservasFiltradas.forEach(reserva => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${this.getAreaName(reserva.area)}</td>
+                    <td>${reserva.morador || 'N/A'}</td>
+                    <td>${this.formatDate(reserva.data)}</td>
+                    <td>${reserva.horario}</td>
+                    <td><span class="status-badge status-${reserva.status}">${reserva.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn btn-edit" onclick="sistema.editReserva(${reserva.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" onclick="sistema.deleteReserva(${reserva.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Atualizar dados locais para compatibilidade
+            this.data.reservas = reservas;
+        } catch (error) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Erro ao carregar reservas</td></tr>';
+        }
     }
 
     loadOcorrencias() {
@@ -690,64 +754,86 @@ class CondominioSystem {
     }
 
     // Novas seções
-    loadUnidades() {
+    async loadUnidades() {
         const tbody = document.getElementById('unidadesTable');
         if (!tbody) return;
         
-        tbody.innerHTML = '';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Carregando...</td></tr>';
 
-        this.data.unidades.forEach(unidade => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${unidade.numero}</td>
-                <td>${unidade.bloco}</td>
-                <td>${unidade.andar}</td>
-                <td>${unidade.tipo}</td>
-                <td>${unidade.moradorPrincipal}</td>
-                <td><span class="status-badge status-${unidade.status}">${unidade.status}</span></td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="action-btn btn-edit" onclick="sistema.editUnidade(${unidade.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn btn-delete" onclick="sistema.deleteUnidade(${unidade.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        try {
+            const response = await this.apiCall('/unidades');
+            const unidades = response.data || response;
+
+            tbody.innerHTML = '';
+            unidades.forEach(unidade => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${unidade.numero}</td>
+                    <td>${unidade.bloco}</td>
+                    <td>${unidade.andar || '-'}</td>
+                    <td>${unidade.tipo}</td>
+                    <td>${unidade.moradorPrincipal || '-'}</td>
+                    <td><span class="status-badge status-${unidade.status}">${unidade.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn btn-edit" onclick="sistema.editUnidade(${unidade.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" onclick="sistema.deleteUnidade(${unidade.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Atualizar dados locais para compatibilidade
+            this.data.unidades = unidades;
+        } catch (error) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Erro ao carregar unidades</td></tr>';
+        }
     }
 
-    loadPrestadores() {
+    async loadPrestadores() {
         const tbody = document.getElementById('prestadoresTable');
         if (!tbody) return;
         
-        tbody.innerHTML = '';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Carregando...</td></tr>';
 
-        this.data.prestadores.forEach(prestador => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${prestador.nome}</td>
-                <td>${prestador.empresa}</td>
-                <td>${prestador.servico}</td>
-                <td>${prestador.telefone}</td>
-                <td>${prestador.email}</td>
-                <td><span class="status-badge status-${prestador.status}">${prestador.status}</span></td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="action-btn btn-edit" onclick="sistema.editPrestador(${prestador.id})">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn btn-delete" onclick="sistema.deletePrestador(${prestador.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
+        try {
+            const response = await this.apiCall('/prestadores');
+            const prestadores = response.data || response;
+
+            tbody.innerHTML = '';
+            prestadores.forEach(prestador => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${prestador.nome}</td>
+                    <td>${prestador.empresa}</td>
+                    <td>${prestador.servico}</td>
+                    <td>${prestador.telefone}</td>
+                    <td>${prestador.email}</td>
+                    <td><span class="status-badge status-${prestador.status}">${prestador.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn btn-edit" onclick="sistema.editPrestador(${prestador.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="action-btn btn-delete" onclick="sistema.deletePrestador(${prestador.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Atualizar dados locais para compatibilidade
+            this.data.prestadores = prestadores;
+        } catch (error) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Erro ao carregar prestadores</td></tr>';
+        }
     }
 
     loadOrdemServico() {
@@ -1037,23 +1123,23 @@ class CondominioSystem {
     }
 
     // Novos modais
-    openUnidadeModal() {
+    async openUnidadeModal() {
         this.openModal('unidadeModal');
-        this.populateUnidadeSelects();
+        await this.populateUnidadeSelects();
     }
 
     openPrestadorModal() {
         this.openModal('prestadorModal');
     }
 
-    openOrdemServicoModal() {
+    async openOrdemServicoModal() {
         this.openModal('ordemServicoModal');
-        this.populateOrdemServicoSelects();
+        await this.populateOrdemServicoSelects();
     }
 
-    openVisitanteModal() {
+    async openVisitanteModal() {
         this.openModal('visitanteModal');
-        this.populateUnidadeSelects();
+        await this.populateUnidadeSelects();
     }
 
     openPatrimonioModal() {
@@ -1143,61 +1229,91 @@ class CondominioSystem {
     }
 
     // Funções de população de selects
-    populateUnidadeSelects() {
-        // Morador Principal da unidade deve listar apenas moradores
-        // que ainda NÃO possuem unidade vinculada (para cadastro de novas unidades)
-        const moradorSelect = document.getElementById('unidadeMorador');
-        if (moradorSelect) {
-            moradorSelect.innerHTML = '<option value="">Selecione um morador</option>';
+    async populateUnidadeSelects() {
+        try {
+            // Buscar moradores e unidades da API
+            const [moradoresResponse, unidadesResponse] = await Promise.all([
+                this.apiCall('/moradores'),
+                this.apiCall('/unidades')
+            ]);
 
-            // Conjunto de moradores já vinculados a alguma unidade
-            const moradoresComUnidade = new Set(
-                this.data.unidades
-                    .filter(u => u.moradorId != null)
-                    .map(u => u.moradorId)
-            );
+            const moradores = moradoresResponse.data || moradoresResponse;
+            const unidades = unidadesResponse.data || unidadesResponse;
 
-            this.data.moradores.forEach(morador => {
-                // Só mostra moradores sem unidade
-                if (!moradoresComUnidade.has(morador.id)) {
-                    const option = document.createElement('option');
-                    option.value = morador.id;
-                    option.textContent = `${morador.nome} - Apt ${morador.apartamento}`;
-                    moradorSelect.appendChild(option);
-                }
-            });
-        }
+            // Atualizar dados locais para compatibilidade
+            this.data.moradores = moradores;
+            this.data.unidades = unidades;
 
-        // Campos que realmente são de unidade (ordem de serviço e visitante)
-        const unidadeSelectIds = ['ordemUnidade', 'visitanteUnidade'];
-        unidadeSelectIds.forEach(selectId => {
-            const select = document.getElementById(selectId);
-            if (select) {
-                select.innerHTML = '<option value="">Selecione uma unidade</option>';
-                this.data.unidades.forEach(unidade => {
-                    const option = document.createElement('option');
-                    option.value = unidade.id;
-                    option.textContent = `${unidade.numero} - Bloco ${unidade.bloco}`;
-                    select.appendChild(option);
+            // Morador Principal da unidade deve listar apenas moradores
+            // que ainda NÃO possuem unidade vinculada (para cadastro de novas unidades)
+            const moradorSelect = document.getElementById('unidadeMorador');
+            if (moradorSelect) {
+                moradorSelect.innerHTML = '<option value="">Selecione um morador</option>';
+
+                // Conjunto de moradores já vinculados a alguma unidade
+                const moradoresComUnidade = new Set(
+                    unidades
+                        .filter(u => u.moradorPrincipalId != null)
+                        .map(u => u.moradorPrincipalId)
+                );
+
+                moradores.forEach(morador => {
+                    // Só mostra moradores sem unidade
+                    if (!moradoresComUnidade.has(morador.id)) {
+                        const option = document.createElement('option');
+                        option.value = morador.id;
+                        option.textContent = `${morador.nome} - Apt ${morador.apartamento}`;
+                        moradorSelect.appendChild(option);
+                    }
                 });
             }
-        });
+
+            // Campos que realmente são de unidade (ordem de serviço e visitante)
+            const unidadeSelectIds = ['ordemUnidade', 'visitanteUnidade'];
+            unidadeSelectIds.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                if (select) {
+                    select.innerHTML = '<option value="">Selecione uma unidade</option>';
+                    unidades.forEach(unidade => {
+                        const option = document.createElement('option');
+                        option.value = unidade.id;
+                        option.textContent = `${unidade.numero} - Bloco ${unidade.bloco}`;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        } catch (error) {
+            console.error('Erro ao popular selects de unidades:', error);
+            // Em caso de erro, pelo menos limpa os selects
+            const moradorSelect = document.getElementById('unidadeMorador');
+            if (moradorSelect) {
+                moradorSelect.innerHTML = '<option value="">Erro ao carregar moradores</option>';
+            }
+        }
     }
 
-    populateOrdemServicoSelects() {
+    async populateOrdemServicoSelects() {
         // Popula select de unidades
-        this.populateUnidadeSelects();
+        await this.populateUnidadeSelects();
         
         // Popula select de prestadores
         const select = document.getElementById('ordemPrestador');
         if (select) {
             select.innerHTML = '<option value="">Selecione um prestador</option>';
-            this.data.prestadores.forEach(prestador => {
-                const option = document.createElement('option');
-                option.value = prestador.id;
-                option.textContent = `${prestador.nome} - ${prestador.empresa}`;
-                select.appendChild(option);
-            });
+            try {
+                const response = await this.apiCall('/prestadores');
+                const prestadores = response.data || response;
+                this.data.prestadores = prestadores;
+                
+                prestadores.forEach(prestador => {
+                    const option = document.createElement('option');
+                    option.value = prestador.id;
+                    option.textContent = `${prestador.nome} - ${prestador.empresa}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar prestadores:', error);
+            }
         }
     }
 
@@ -1218,115 +1334,98 @@ class CondominioSystem {
     }
 
     // Form handlers
-    handleMoradorSubmit() {
-        if (this.editingId && this.editingType === 'morador') {
-            // Modo edição
-            const index = this.data.moradores.findIndex(m => m.id === this.editingId);
-            if (index !== -1) {
-                this.data.moradores[index] = {
-                    ...this.data.moradores[index],
-                    nome: document.getElementById('moradorNome').value,
-                    apartamento: document.getElementById('moradorApartamento').value,
-                    email: document.getElementById('moradorEmail').value,
-                    telefone: document.getElementById('moradorTelefone').value
-                    // status permanece o mesmo (não existe campo de status no modal)
-                };
+    async handleMoradorSubmit() {
+        const moradorData = {
+            nome: document.getElementById('moradorNome').value,
+            apartamento: document.getElementById('moradorApartamento').value,
+            email: document.getElementById('moradorEmail').value,
+            telefone: document.getElementById('moradorTelefone').value
+        };
+
+        try {
+            if (this.editingId && this.editingType === 'morador') {
+                // Modo edição
+                await this.apiCall(`/moradores/${this.editingId}`, 'PUT', moradorData);
                 this.showNotification('Morador atualizado com sucesso!', 'success');
+                this.editingId = null;
+                this.editingType = null;
+            } else {
+                // Modo criação
+                moradorData.status = 'ativo';
+                await this.apiCall('/moradores', 'POST', moradorData);
+                this.showNotification('Morador adicionado com sucesso!', 'success');
             }
-            this.editingId = null;
-            this.editingType = null;
-        } else {
-            // Modo criação
-            const morador = {
-                id: this.data.moradores.length + 1,
-                nome: document.getElementById('moradorNome').value,
-                apartamento: document.getElementById('moradorApartamento').value,
-                email: document.getElementById('moradorEmail').value,
-                telefone: document.getElementById('moradorTelefone').value,
-                status: 'ativo'
-            };
-            this.data.moradores.push(morador);
-            this.showNotification('Morador adicionado com sucesso!', 'success');
+            
+            this.closeModal();
+            await this.loadMoradores();
+            this.updateStats();
+        } catch (error) {
+            // Erro já foi tratado no apiCall
         }
-        
-        this.closeModal();
-        this.loadMoradores();
-        this.updateStats();
     }
 
-    handleAvisoSubmit() {
-        if (this.editingId && this.editingType === 'aviso') {
-            // Modo edição
-            const index = this.data.avisos.findIndex(a => a.id === this.editingId);
-            if (index !== -1) {
-                this.data.avisos[index] = {
-                    ...this.data.avisos[index],
-                    titulo: document.getElementById('avisoTitulo').value,
-                    descricao: document.getElementById('avisoDescricao').value,
-                    prioridade: document.getElementById('avisoPrioridade').value
-                };
+    async handleAvisoSubmit() {
+        const avisoData = {
+            titulo: document.getElementById('avisoTitulo').value,
+            descricao: document.getElementById('avisoDescricao').value,
+            prioridade: document.getElementById('avisoPrioridade').value
+        };
+
+        try {
+            if (this.editingId && this.editingType === 'aviso') {
+                // Modo edição
+                await this.apiCall(`/avisos/${this.editingId}`, 'PUT', avisoData);
                 this.showNotification('Aviso atualizado com sucesso!', 'success');
+                this.editingId = null;
+                this.editingType = null;
+            } else {
+                // Modo criação
+                avisoData.data = new Date().toISOString().split('T')[0];
+                avisoData.ativo = true;
+                await this.apiCall('/avisos', 'POST', avisoData);
+                this.showNotification('Aviso publicado com sucesso!', 'success');
             }
-            this.editingId = null;
-            this.editingType = null;
-        } else {
-            // Modo criação
-            const aviso = {
-                id: this.data.avisos.length + 1,
-                titulo: document.getElementById('avisoTitulo').value,
-                descricao: document.getElementById('avisoDescricao').value,
-                prioridade: document.getElementById('avisoPrioridade').value,
-                data: new Date().toISOString().split('T')[0],
-                ativo: true
-            };
-            this.data.avisos.push(aviso);
-            this.showNotification('Aviso publicado com sucesso!', 'success');
+            
+            this.closeModal();
+            await this.loadAvisos();
+            this.updateStats();
+        } catch (error) {
+            // Erro já foi tratado no apiCall
         }
-        
-        this.closeModal();
-        this.loadAvisos();
-        this.updateStats();
     }
 
-    handleReservaSubmit() {
+    async handleReservaSubmit() {
         const moradorId = parseInt(document.getElementById('reservaMorador').value);
         const morador = this.data.moradores.find(m => m.id === moradorId);
 
-        if (this.editingId && this.editingType === 'reserva') {
-            // Modo edição
-            const index = this.data.reservas.findIndex(r => r.id === this.editingId);
-            if (index !== -1) {
-                this.data.reservas[index] = {
-                    ...this.data.reservas[index],
-                    area: document.getElementById('reservaArea').value,
-                    morador: morador.nome,
-                    moradorId: moradorId,
-                    data: document.getElementById('reservaData').value,
-                    horario: document.getElementById('reservaHorario').value
-                    // status permanece o mesmo (não existe campo de status no modal)
-                };
+        const reservaData = {
+            area: document.getElementById('reservaArea').value,
+            moradorId: moradorId,
+            morador: morador ? morador.nome : '',
+            data: document.getElementById('reservaData').value,
+            horario: document.getElementById('reservaHorario').value
+        };
+
+        try {
+            if (this.editingId && this.editingType === 'reserva') {
+                // Modo edição
+                await this.apiCall(`/reservas/${this.editingId}`, 'PUT', reservaData);
                 this.showNotification('Reserva atualizada com sucesso!', 'success');
+                this.editingId = null;
+                this.editingType = null;
+            } else {
+                // Modo criação
+                reservaData.status = 'confirmada';
+                await this.apiCall('/reservas', 'POST', reservaData);
+                this.showNotification('Reserva realizada com sucesso!', 'success');
             }
-            this.editingId = null;
-            this.editingType = null;
-        } else {
-            // Modo criação
-            const reserva = {
-                id: this.data.reservas.length + 1,
-                area: document.getElementById('reservaArea').value,
-                morador: morador.nome,
-                moradorId: moradorId,
-                data: document.getElementById('reservaData').value,
-                horario: document.getElementById('reservaHorario').value,
-                status: 'confirmada'
-            };
-            this.data.reservas.push(reserva);
-            this.showNotification('Reserva realizada com sucesso!', 'success');
+            
+            this.closeModal();
+            await this.loadReservas();
+            this.updateStats();
+        } catch (error) {
+            // Erro já foi tratado no apiCall
         }
-        
-        this.closeModal();
-        this.loadReservas();
-        this.updateStats();
     }
 
     handleOcorrenciaSubmit() {
@@ -1370,83 +1469,68 @@ class CondominioSystem {
     }
 
     // Novos handlers
-    handleUnidadeSubmit() {
-        const moradorId = parseInt(document.getElementById('unidadeMorador').value);
+    async handleUnidadeSubmit() {
+        const moradorId = parseInt(document.getElementById('unidadeMorador').value) || null;
         const morador = moradorId ? this.data.moradores.find(m => m.id === moradorId) : null;
 
-        if (this.editingId && this.editingType === 'unidade') {
-            // Modo edição
-            const index = this.data.unidades.findIndex(u => u.id === this.editingId);
-            if (index !== -1) {
-                this.data.unidades[index] = {
-                    ...this.data.unidades[index],
-                    numero: document.getElementById('unidadeNumero').value,
-                    bloco: document.getElementById('unidadeBloco').value,
-                    andar: parseInt(document.getElementById('unidadeAndar').value),
-                    tipo: document.getElementById('unidadeTipo').value,
-                    moradorPrincipal: morador ? morador.nome : null,
-                    moradorId: moradorId || null
-                    // status permanece o mesmo (não existe campo de status no modal)
-                };
+        const unidadeData = {
+            numero: document.getElementById('unidadeNumero').value,
+            bloco: document.getElementById('unidadeBloco').value,
+            andar: parseInt(document.getElementById('unidadeAndar').value) || null,
+            tipo: document.getElementById('unidadeTipo').value,
+            moradorPrincipalId: moradorId,
+            moradorPrincipal: morador ? morador.nome : null
+        };
+
+        try {
+            if (this.editingId && this.editingType === 'unidade') {
+                // Modo edição
+                await this.apiCall(`/unidades/${this.editingId}`, 'PUT', unidadeData);
                 this.showNotification('Unidade atualizada com sucesso!', 'success');
+                this.editingId = null;
+                this.editingType = null;
+            } else {
+                // Modo criação
+                unidadeData.status = 'ocupada';
+                await this.apiCall('/unidades', 'POST', unidadeData);
+                this.showNotification('Unidade cadastrada com sucesso!', 'success');
             }
-            this.editingId = null;
-            this.editingType = null;
-        } else {
-            // Modo criação
-            const unidade = {
-                id: this.data.unidades.length + 1,
-                numero: document.getElementById('unidadeNumero').value,
-                bloco: document.getElementById('unidadeBloco').value,
-                andar: parseInt(document.getElementById('unidadeAndar').value),
-                tipo: document.getElementById('unidadeTipo').value,
-                moradorPrincipal: morador ? morador.nome : null,
-                moradorId: moradorId || null,
-                status: 'ocupada'
-            };
-            this.data.unidades.push(unidade);
-            this.showNotification('Unidade cadastrada com sucesso!', 'success');
+            
+            this.closeModal();
+            await this.loadUnidades();
+        } catch (error) {
+            // Erro já foi tratado no apiCall
         }
-        
-        this.closeModal();
-        this.loadUnidades();
     }
 
-    handlePrestadorSubmit() {
-        if (this.editingId && this.editingType === 'prestador') {
-            // Modo edição
-            const index = this.data.prestadores.findIndex(p => p.id === this.editingId);
-            if (index !== -1) {
-                this.data.prestadores[index] = {
-                    ...this.data.prestadores[index],
-                    nome: document.getElementById('prestadorNome').value,
-                    empresa: document.getElementById('prestadorEmpresa').value,
-                    servico: document.getElementById('prestadorServico').value,
-                    telefone: document.getElementById('prestadorTelefone').value,
-                    email: document.getElementById('prestadorEmail').value
-                    // status permanece o mesmo (não existe campo de status no modal)
-                };
+    async handlePrestadorSubmit() {
+        const prestadorData = {
+            nome: document.getElementById('prestadorNome').value,
+            empresa: document.getElementById('prestadorEmpresa').value,
+            servico: document.getElementById('prestadorServico').value,
+            telefone: document.getElementById('prestadorTelefone').value,
+            email: document.getElementById('prestadorEmail').value
+        };
+
+        try {
+            if (this.editingId && this.editingType === 'prestador') {
+                // Modo edição
+                await this.apiCall(`/prestadores/${this.editingId}`, 'PUT', prestadorData);
                 this.showNotification('Prestador atualizado com sucesso!', 'success');
+                this.editingId = null;
+                this.editingType = null;
+            } else {
+                // Modo criação
+                prestadorData.status = 'ativo';
+                await this.apiCall('/prestadores', 'POST', prestadorData);
+                this.showNotification('Prestador cadastrado com sucesso!', 'success');
             }
-            this.editingId = null;
-            this.editingType = null;
-        } else {
-            // Modo criação
-            const prestador = {
-                id: this.data.prestadores.length + 1,
-                nome: document.getElementById('prestadorNome').value,
-                empresa: document.getElementById('prestadorEmpresa').value,
-                servico: document.getElementById('prestadorServico').value,
-                telefone: document.getElementById('prestadorTelefone').value,
-                email: document.getElementById('prestadorEmail').value,
-                status: 'ativo'
-            };
-            this.data.prestadores.push(prestador);
-            this.showNotification('Prestador cadastrado com sucesso!', 'success');
+            
+            this.closeModal();
+            await this.loadPrestadores();
+        } catch (error) {
+            // Erro já foi tratado no apiCall
         }
-        
-        this.closeModal();
-        this.loadPrestadores();
     }
 
     handleOrdemServicoSubmit() {
@@ -1767,30 +1851,42 @@ class CondominioSystem {
     }
 
     // Delete functions
-    deleteMorador(id) {
+    async deleteMorador(id) {
         if (confirm('Tem certeza que deseja excluir este morador?')) {
-            this.data.moradores = this.data.moradores.filter(m => m.id !== id);
-            this.loadMoradores();
-            this.updateStats();
-            this.showNotification('Morador excluído com sucesso!', 'success');
+            try {
+                await this.apiCall(`/moradores/${id}`, 'DELETE');
+                this.showNotification('Morador excluído com sucesso!', 'success');
+                await this.loadMoradores();
+                this.updateStats();
+            } catch (error) {
+                // Erro já foi tratado no apiCall
+            }
         }
     }
 
-    deleteAviso(id) {
+    async deleteAviso(id) {
         if (confirm('Tem certeza que deseja excluir este aviso?')) {
-            this.data.avisos = this.data.avisos.filter(a => a.id !== id);
-            this.loadAvisos();
-            this.updateStats();
-            this.showNotification('Aviso excluído com sucesso!', 'success');
+            try {
+                await this.apiCall(`/avisos/${id}`, 'DELETE');
+                this.showNotification('Aviso excluído com sucesso!', 'success');
+                await this.loadAvisos();
+                this.updateStats();
+            } catch (error) {
+                // Erro já foi tratado no apiCall
+            }
         }
     }
 
-    deleteReserva(id) {
+    async deleteReserva(id) {
         if (confirm('Tem certeza que deseja excluir esta reserva?')) {
-            this.data.reservas = this.data.reservas.filter(r => r.id !== id);
-            this.loadReservas();
-            this.updateStats();
-            this.showNotification('Reserva excluída com sucesso!', 'success');
+            try {
+                await this.apiCall(`/reservas/${id}`, 'DELETE');
+                this.showNotification('Reserva excluída com sucesso!', 'success');
+                await this.loadReservas();
+                this.updateStats();
+            } catch (error) {
+                // Erro já foi tratado no apiCall
+            }
         }
     }
 
@@ -1804,19 +1900,27 @@ class CondominioSystem {
     }
 
     // Novas funções de delete
-    deleteUnidade(id) {
+    async deleteUnidade(id) {
         if (confirm('Tem certeza que deseja excluir esta unidade?')) {
-            this.data.unidades = this.data.unidades.filter(u => u.id !== id);
-            this.loadUnidades();
-            this.showNotification('Unidade excluída com sucesso!', 'success');
+            try {
+                await this.apiCall(`/unidades/${id}`, 'DELETE');
+                this.showNotification('Unidade excluída com sucesso!', 'success');
+                await this.loadUnidades();
+            } catch (error) {
+                // Erro já foi tratado no apiCall
+            }
         }
     }
 
-    deletePrestador(id) {
+    async deletePrestador(id) {
         if (confirm('Tem certeza que deseja excluir este prestador?')) {
-            this.data.prestadores = this.data.prestadores.filter(p => p.id !== id);
-            this.loadPrestadores();
-            this.showNotification('Prestador excluído com sucesso!', 'success');
+            try {
+                await this.apiCall(`/prestadores/${id}`, 'DELETE');
+                this.showNotification('Prestador excluído com sucesso!', 'success');
+                await this.loadPrestadores();
+            } catch (error) {
+                // Erro já foi tratado no apiCall
+            }
         }
     }
 
@@ -1887,51 +1991,63 @@ class CondominioSystem {
     // Edit functions (simplified for demo)
     // ===== FUNÇÕES DE EDIÇÃO =====
     
-    editMorador(id) {
-        const morador = this.data.moradores.find(m => m.id === id);
-        if (!morador) return;
-        
-        this.editingId = id;
-        this.editingType = 'morador';
-        
-        document.getElementById('moradorNome').value = morador.nome;
-        document.getElementById('moradorApartamento').value = morador.apartamento;
-        document.getElementById('moradorEmail').value = morador.email;
-        document.getElementById('moradorTelefone').value = morador.telefone;
-        
-        document.querySelector('#moradorModal .modal-header h3').textContent = 'Editar Morador';
-        this.openModal('moradorModal');
+    async editMorador(id) {
+        try {
+            const response = await this.apiCall(`/moradores/${id}`);
+            const morador = response.data || response;
+            
+            this.editingId = id;
+            this.editingType = 'morador';
+            
+            document.getElementById('moradorNome').value = morador.nome;
+            document.getElementById('moradorApartamento').value = morador.apartamento;
+            document.getElementById('moradorEmail').value = morador.email;
+            document.getElementById('moradorTelefone').value = morador.telefone;
+            
+            document.querySelector('#moradorModal .modal-header h3').textContent = 'Editar Morador';
+            this.openModal('moradorModal');
+        } catch (error) {
+            // Erro já foi tratado no apiCall
+        }
     }
 
-    editAviso(id) {
-        const aviso = this.data.avisos.find(a => a.id === id);
-        if (!aviso) return;
-        
-        this.editingId = id;
-        this.editingType = 'aviso';
-        
-        document.getElementById('avisoTitulo').value = aviso.titulo;
-        document.getElementById('avisoDescricao').value = aviso.descricao;
-        document.getElementById('avisoPrioridade').value = aviso.prioridade;
-        
-        document.querySelector('#avisoModal .modal-header h3').textContent = 'Editar Aviso';
-        this.openModal('avisoModal');
+    async editAviso(id) {
+        try {
+            const response = await this.apiCall(`/avisos/${id}`);
+            const aviso = response.data || response;
+            
+            this.editingId = id;
+            this.editingType = 'aviso';
+            
+            document.getElementById('avisoTitulo').value = aviso.titulo;
+            document.getElementById('avisoDescricao').value = aviso.descricao;
+            document.getElementById('avisoPrioridade').value = aviso.prioridade;
+            
+            document.querySelector('#avisoModal .modal-header h3').textContent = 'Editar Aviso';
+            this.openModal('avisoModal');
+        } catch (error) {
+            // Erro já foi tratado no apiCall
+        }
     }
 
-    editReserva(id) {
-        const reserva = this.data.reservas.find(r => r.id === id);
-        if (!reserva) return;
-        
-        this.editingId = id;
-        this.editingType = 'reserva';
-        
-        document.getElementById('reservaArea').value = reserva.area;
-        document.getElementById('reservaMorador').value = reserva.moradorId;
-        document.getElementById('reservaData').value = reserva.data;
-        document.getElementById('reservaHorario').value = reserva.horario;
-        
-        document.querySelector('#reservaModal .modal-header h3').textContent = 'Editar Reserva';
-        this.openModal('reservaModal');
+    async editReserva(id) {
+        try {
+            const response = await this.apiCall(`/reservas/${id}`);
+            const reserva = response.data || response;
+            
+            this.editingId = id;
+            this.editingType = 'reserva';
+            
+            document.getElementById('reservaArea').value = reserva.area;
+            document.getElementById('reservaMorador').value = reserva.moradorId || reserva.moradorId;
+            document.getElementById('reservaData').value = reserva.data;
+            document.getElementById('reservaHorario').value = reserva.horario;
+            
+            document.querySelector('#reservaModal .modal-header h3').textContent = 'Editar Reserva';
+            this.openModal('reservaModal');
+        } catch (error) {
+            // Erro já foi tratado no apiCall
+        }
     }
 
     editOcorrencia(id) {
@@ -1949,38 +2065,49 @@ class CondominioSystem {
         this.openModal('ocorrenciaModal');
     }
 
-    editUnidade(id) {
-        const unidade = this.data.unidades.find(u => u.id === id);
-        if (!unidade) return;
-        
-        this.editingId = id;
-        this.editingType = 'unidade';
-        
-        document.getElementById('unidadeNumero').value = unidade.numero;
-        document.getElementById('unidadeBloco').value = unidade.bloco;
-        document.getElementById('unidadeAndar').value = unidade.andar;
-        document.getElementById('unidadeTipo').value = unidade.tipo;
-        document.getElementById('unidadeMorador').value = unidade.moradorId;
-        
-        document.querySelector('#unidadeModal .modal-header h3').textContent = 'Editar Unidade';
-        this.openModal('unidadeModal');
+    async editUnidade(id) {
+        try {
+            const response = await this.apiCall(`/unidades/${id}`);
+            const unidade = response.data || response;
+            
+            this.editingId = id;
+            this.editingType = 'unidade';
+            
+            // Popular selects antes de preencher os valores
+            await this.populateUnidadeSelects();
+            
+            document.getElementById('unidadeNumero').value = unidade.numero;
+            document.getElementById('unidadeBloco').value = unidade.bloco;
+            document.getElementById('unidadeAndar').value = unidade.andar || '';
+            document.getElementById('unidadeTipo').value = unidade.tipo;
+            document.getElementById('unidadeMorador').value = unidade.moradorPrincipalId || '';
+            
+            document.querySelector('#unidadeModal .modal-header h3').textContent = 'Editar Unidade';
+            this.openModal('unidadeModal');
+        } catch (error) {
+            // Erro já foi tratado no apiCall
+        }
     }
 
-    editPrestador(id) {
-        const prestador = this.data.prestadores.find(p => p.id === id);
-        if (!prestador) return;
-        
-        this.editingId = id;
-        this.editingType = 'prestador';
-        
-        document.getElementById('prestadorNome').value = prestador.nome;
-        document.getElementById('prestadorEmpresa').value = prestador.empresa;
-        document.getElementById('prestadorServico').value = prestador.servico;
-        document.getElementById('prestadorTelefone').value = prestador.telefone;
-        document.getElementById('prestadorEmail').value = prestador.email;
-        
-        document.querySelector('#prestadorModal .modal-header h3').textContent = 'Editar Prestador';
-        this.openModal('prestadorModal');
+    async editPrestador(id) {
+        try {
+            const response = await this.apiCall(`/prestadores/${id}`);
+            const prestador = response.data || response;
+            
+            this.editingId = id;
+            this.editingType = 'prestador';
+            
+            document.getElementById('prestadorNome').value = prestador.nome;
+            document.getElementById('prestadorEmpresa').value = prestador.empresa;
+            document.getElementById('prestadorServico').value = prestador.servico;
+            document.getElementById('prestadorTelefone').value = prestador.telefone;
+            document.getElementById('prestadorEmail').value = prestador.email;
+            
+            document.querySelector('#prestadorModal .modal-header h3').textContent = 'Editar Prestador';
+            this.openModal('prestadorModal');
+        } catch (error) {
+            // Erro já foi tratado no apiCall
+        }
     }
 
     editOrdemServico(id) {
@@ -2305,4 +2432,5 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
 
