@@ -2,6 +2,42 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Avisos
+ *   description: Sistema de avisos
+ */
+
+/**
+ * @swagger
+ * /avisos:
+ *   get:
+ *     tags: [Avisos]
+ *     summary: Lista avisos
+ *
+ *   post:
+ *     tags: [Avisos]
+ *     summary: Cria aviso
+ */
+
+/**
+ * @swagger
+ * /avisos/{id}:
+ *   get:
+ *     tags: [Avisos]
+ *     summary: Obtém aviso
+ *
+ *   put:
+ *     tags: [Avisos]
+ *     summary: Atualiza aviso
+ *
+ *   delete:
+ *     tags: [Avisos]
+ *     summary: Remove aviso
+ */
+
+
 // Dados mockados para demonstração
 let avisos = [
     {

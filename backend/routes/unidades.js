@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Unidades
+ *   description: Unidades residenciais
+ */
+
+/**
+ * @swagger
+ * /unidades:
+ *   get:
+ *     tags: [Unidades]
+ *     summary: Lista unidades
+ *   post:
+ *     tags: [Unidades]
+ *     summary: Cria unidade
+ *
+ * /unidades/{id}:
+ *   get:
+ *     tags: [Unidades]
+ *     summary: Obtém unidade
+ *   put:
+ *     tags: [Unidades]
+ *     summary: Atualiza unidade
+ *   delete:
+ *     tags: [Unidades]
+ *     summary: Remove unidade
+ */
+
+
 // Dados mockados
 let unidades = [
     {

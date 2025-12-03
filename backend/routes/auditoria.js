@@ -1,6 +1,34 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Auditoria
+ *   description: Logs de auditoria
+ */
+
+/**
+ * @swagger
+ * /auditoria:
+ *   get:
+ *     tags: [Auditoria]
+ *     summary: Lista os logs de auditoria
+ *
+ *   post:
+ *     tags: [Auditoria]
+ *     summary: Registra um log
+ */
+
+/**
+ * @swagger
+ * /auditoria/{id}:
+ *   get:
+ *     tags: [Auditoria]
+ *     summary: Obtém log pelo ID
+ */
+
+
 // Simulação de dados em memória (em produção, usar banco de dados)
 let logs = [
     {

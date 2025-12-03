@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Funções
+ *   description: Funções e cargos
+ */
+
+/**
+ * @swagger
+ * /funcoes:
+ *   get:
+ *     tags: [Funções]
+ *     summary: Lista funções
+ *   post:
+ *     tags: [Funções]
+ *     summary: Cria função
+ *
+ * /funcoes/{id}:
+ *   get:
+ *     tags: [Funções]
+ *     summary: Obtém função
+ *   put:
+ *     tags: [Funções]
+ *     summary: Atualiza função
+ *   delete:
+ *     tags: [Funções]
+ *     summary: Remove função
+ */
+
+
 // Dados mockados
 let funcoes = [
     {

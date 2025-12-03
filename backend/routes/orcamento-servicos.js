@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Orçamentos de Serviços
+ *   description: Orçamentos relacionados a serviços
+ */
+
+/**
+ * @swagger
+ * /orcamento-servicos:
+ *   get:
+ *     tags: [Orçamentos de Serviços]
+ *     summary: Lista orçamentos
+ *   post:
+ *     tags: [Orçamentos de Serviços]
+ *     summary: Cria orçamento
+ *
+ * /orcamento-servicos/{id}:
+ *   get:
+ *     tags: [Orçamentos de Serviços]
+ *     summary: Obtém orçamento
+ *   put:
+ *     tags: [Orçamentos de Serviços]
+ *     summary: Atualiza orçamento
+ *   delete:
+ *     tags: [Orçamentos de Serviços]
+ *     summary: Remove orçamento
+ */
+
+
 // Dados mockados
 let orcamentosServicos = [
     {

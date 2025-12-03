@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Documentos
+ *   description: Gestão de documentos
+ */
+
+/**
+ * @swagger
+ * /documentos:
+ *   get:
+ *     tags: [Documentos]
+ *     summary: Lista documentos
+ *   post:
+ *     tags: [Documentos]
+ *     summary: Cria documento
+ *
+ * /documentos/{id}:
+ *   get:
+ *     tags: [Documentos]
+ *     summary: Obtém documento
+ *   put:
+ *     tags: [Documentos]
+ *     summary: Atualiza documento
+ *   delete:
+ *     tags: [Documentos]
+ *     summary: Remove documento
+ */
+
+
 // Dados mockados
 let documentos = [
     {

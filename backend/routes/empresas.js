@@ -1,6 +1,42 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Empresas
+ *   description: Gestão de empresas
+ */
+
+/**
+ * @swagger
+ * /empresas:
+ *   get:
+ *     tags: [Empresas]
+ *     summary: Lista empresas
+ *
+ *   post:
+ *     tags: [Empresas]
+ *     summary: Cria empresa
+ */
+
+/**
+ * @swagger
+ * /empresas/{id}:
+ *   get:
+ *     tags: [Empresas]
+ *     summary: Obtém empresa
+ *
+ *   put:
+ *     tags: [Empresas]
+ *     summary: Atualiza empresa
+ *
+ *   delete:
+ *     tags: [Empresas]
+ *     summary: Remove empresa
+ */
+
+
 // Simulação de dados em memória (em produção, usar banco de dados)
 let empresas = [
     {

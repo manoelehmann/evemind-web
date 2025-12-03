@@ -1,6 +1,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Permissões
+ *   description: Controle de permissões do sistema
+ */
+
+/**
+ * @swagger
+ * /permissoes:
+ *   get:
+ *     tags: [Permissões]
+ *     summary: Lista permissões
+ *   post:
+ *     tags: [Permissões]
+ *     summary: Cria permissão
+ *
+ * /permissoes/{id}:
+ *   get:
+ *     tags: [Permissões]
+ *     summary: Obtém permissão
+ *   put:
+ *     tags: [Permissões]
+ *     summary: Atualiza permissão
+ *   delete:
+ *     tags: [Permissões]
+ *     summary: Remove permissão
+ */
+
+
 // Simulação de dados em memória (em produção, usar banco de dados)
 let permissoes = [
     {

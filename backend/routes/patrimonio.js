@@ -2,6 +2,42 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Patrimônio
+ *   description: Itens patrimoniais
+ */
+
+/**
+ * @swagger
+ * /patrimonio:
+ *   get:
+ *     tags: [Patrimônio]
+ *     summary: Lista patrimônio
+ *
+ *   post:
+ *     tags: [Patrimônio]
+ *     summary: Cria item patrimonial
+ */
+
+/**
+ * @swagger
+ * /patrimonio/{id}:
+ *   get:
+ *     tags: [Patrimônio]
+ *     summary: Obtém item
+ *
+ *   put:
+ *     tags: [Patrimônio]
+ *     summary: Atualiza item
+ *
+ *   delete:
+ *     tags: [Patrimônio]
+ *     summary: Exclui item
+ */
+
+
 // Dados mockados
 let patrimonio = [
     {

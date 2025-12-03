@@ -1,6 +1,42 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Usuários
+ *   description: Gestão de usuários
+ */
+
+/**
+ * @swagger
+ * /usuarios:
+ *   get:
+ *     tags: [Usuários]
+ *     summary: Lista usuários
+ *
+ *   post:
+ *     tags: [Usuários]
+ *     summary: Cria usuário
+ */
+
+/**
+ * @swagger
+ * /usuarios/{id}:
+ *   get:
+ *     tags: [Usuários]
+ *     summary: Obtém usuário
+ *
+ *   put:
+ *     tags: [Usuários]
+ *     summary: Atualiza usuário
+ *
+ *   delete:
+ *     tags: [Usuários]
+ *     summary: Remove usuário
+ */
+
+
 // Simulação de dados em memória (em produção, usar banco de dados)
 let usuarios = [
     {

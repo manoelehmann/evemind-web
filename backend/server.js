@@ -1,4 +1,5 @@
 // Servidor Backend do Evemind
+const { swaggerUi, swaggerSpec } = require('./swagger');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -24,6 +25,7 @@ app.use(helmet({
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Servir arquivos estáticos do frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
@@ -95,7 +97,7 @@ const HOST = config.server.host || 'localhost';
 app.listen(PORT, HOST, () => {
     console.log(`🚀 Servidor Evemind rodando em http://${HOST}:${PORT}`);
     console.log(`📱 Frontend disponível em http://${HOST}:${PORT}`);
-    console.log(`🔧 API disponível em http://${HOST}:${PORT}/api`);
+    console.log(`🔧 API disponível em http://localhost:3000/api-docs`);
 });
 
 module.exports = app;

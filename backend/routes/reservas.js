@@ -2,6 +2,42 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Reservas
+ *   description: Reservas de áreas comuns
+ */
+
+/**
+ * @swagger
+ * /reservas:
+ *   get:
+ *     tags: [Reservas]
+ *     summary: Lista reservas
+ *
+ *   post:
+ *     tags: [Reservas]
+ *     summary: Cria reserva
+ */
+
+/**
+ * @swagger
+ * /reservas/{id}:
+ *   get:
+ *     tags: [Reservas]
+ *     summary: Obtém reserva
+ *
+ *   put:
+ *     tags: [Reservas]
+ *     summary: Atualiza reserva
+ *
+ *   delete:
+ *     tags: [Reservas]
+ *     summary: Remove reserva
+ */
+
+
 // Dados mockados para demonstração
 let reservas = [
     {

@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Atas
+ *   description: Gestão de atas
+ */
+
+/**
+ * @swagger
+ * /atas:
+ *   get:
+ *     tags: [Atas]
+ *     summary: Lista todas as atas
+ *   post:
+ *     tags: [Atas]
+ *     summary: Cria uma nova ata
+ *
+ * /atas/{id}:
+ *   get:
+ *     tags: [Atas]
+ *     summary: Obtém uma ata pelo ID
+ *   put:
+ *     tags: [Atas]
+ *     summary: Atualiza uma ata
+ *   delete:
+ *     tags: [Atas]
+ *     summary: Remove uma ata
+ */
+
+
 // Dados mockados
 let atas = [
     {

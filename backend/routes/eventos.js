@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Eventos
+ *   description: Gestão de eventos
+ */
+
+/**
+ * @swagger
+ * /eventos:
+ *   get:
+ *     tags: [Eventos]
+ *     summary: Lista eventos
+ *   post:
+ *     tags: [Eventos]
+ *     summary: Cria evento
+ *
+ * /eventos/{id}:
+ *   get:
+ *     tags: [Eventos]
+ *     summary: Obtém evento
+ *   put:
+ *     tags: [Eventos]
+ *     summary: Atualiza evento
+ *   delete:
+ *     tags: [Eventos]
+ *     summary: Remove evento
+ */
+
+
 // Dados mockados
 let eventos = [
     {

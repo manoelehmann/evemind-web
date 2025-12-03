@@ -2,6 +2,37 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Agendamentos
+ *   description: Gestão de agendamentos
+ */
+
+/**
+ * @swagger
+ * /agendamentos:
+ *   get:
+ *     tags: [Agendamentos]
+ *     summary: Lista todos os agendamentos
+ *   post:
+ *     tags: [Agendamentos]
+ *     summary: Cria um novo agendamento
+ *
+ * /agendamentos/{id}:
+ *   get:
+ *     tags: [Agendamentos]
+ *     summary: Obtém um agendamento pelo ID
+ *   put:
+ *     tags: [Agendamentos]
+ *     summary: Atualiza um agendamento
+ *   delete:
+ *     tags: [Agendamentos]
+ *     summary: Remove um agendamento
+ */
+
+
+
 // Dados mockados
 let agendamentos = [
     {

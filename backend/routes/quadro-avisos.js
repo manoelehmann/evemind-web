@@ -2,6 +2,35 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Quadro de Avisos
+ *   description: Painel de avisos
+ */
+
+/**
+ * @swagger
+ * /quadro-avisos:
+ *   get:
+ *     tags: [Quadro de Avisos]
+ *     summary: Lista avisos do quadro
+ *   post:
+ *     tags: [Quadro de Avisos]
+ *     summary: Cria aviso no quadro
+ *
+ * /quadro-avisos/{id}:
+ *   get:
+ *     tags: [Quadro de Avisos]
+ *     summary: Obtém aviso
+ *   put:
+ *     tags: [Quadro de Avisos]
+ *     summary: Atualiza aviso
+ *   delete:
+ *     tags: [Quadro de Avisos]
+ *     summary: Remove aviso
+ */
+
 // Dados mockados
 let quadroAvisos = [
     {

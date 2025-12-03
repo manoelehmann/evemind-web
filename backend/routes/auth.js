@@ -6,6 +6,32 @@ const config = require('../config');
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Autenticação
+ *   description: Login, logout e verificação
+ */
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     tags: [Autenticação]
+ *     summary: Realiza login no sistema
+ *
+ * /auth/verify:
+ *   get:
+ *     tags: [Autenticação]
+ *     summary: Verifica token JWT
+ *
+ * /auth/logout:
+ *   post:
+ *     tags: [Autenticação]
+ *     summary: Faz logout (encerra sessão local)
+ */
+
+
 // Dados mockados para demonstração
 const users = [
     {

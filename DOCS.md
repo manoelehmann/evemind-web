@@ -81,8 +81,8 @@ Arquivo `backend/server.js`:
   - **Erro 500** (retorna JSON padrão).
   - **404** para qualquer rota não encontrada (`/api` e demais).
 
-**URL base da API**: `http://<HOST>:<PORT>/api`  
-Por padrão (config.js), `http://localhost:3000/api`.
+**URL base da API**: `http://localhost:3000/api-docs`  
+Por padrão (config.js), `http://localhost:3000/api-docs`.
 
 ---
 

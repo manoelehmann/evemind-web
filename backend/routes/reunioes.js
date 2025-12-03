@@ -2,6 +2,64 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Reuniões
+ *   description: Gestão de reuniões
+ */
+
+/**
+ * @swagger
+ * /reunioes:
+ *   get:
+ *     tags: [Reuniões]
+ *     summary: Lista reuniões
+ *   post:
+ *     tags: [Reuniões]
+ *     summary: Cria reunião
+ *
+ * /reunioes/{id}:
+ *   get:
+ *     tags: [Reuniões]
+ *     summary: Obtém reunião
+ *   put:
+ *     tags: [Reuniões]
+ *     summary: Atualiza reunião
+ *   delete:
+ *     tags: [Reuniões]
+ *     summary: Remove reunião
+ */
+/**
+ * @swagger
+ * tags:
+ *   name: Reuniões
+ *   description: Gestão de reuniões
+ */
+
+/**
+ * @swagger
+ * /reunioes:
+ *   get:
+ *     tags: [Reuniões]
+ *     summary: Lista reuniões
+ *   post:
+ *     tags: [Reuniões]
+ *     summary: Cria reunião
+ *
+ * /reunioes/{id}:
+ *   get:
+ *     tags: [Reuniões]
+ *     summary: Obtém reunião
+ *   put:
+ *     tags: [Reuniões]
+ *     summary: Atualiza reunião
+ *   delete:
+ *     tags: [Reuniões]
+ *     summary: Remove reunião
+ */
+
+
 // Dados mockados
 let reunioes = [
     {

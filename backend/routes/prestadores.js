@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Prestadores
+ *   description: Gestão de prestadores de serviço
+ */
+
+/**
+ * @swagger
+ * /prestadores:
+ *   get:
+ *     tags: [Prestadores]
+ *     summary: Lista prestadores
+ *   post:
+ *     tags: [Prestadores]
+ *     summary: Cria prestador
+ *
+ * /prestadores/{id}:
+ *   get:
+ *     tags: [Prestadores]
+ *     summary: Obtém prestador
+ *   put:
+ *     tags: [Prestadores]
+ *     summary: Atualiza prestador
+ *   delete:
+ *     tags: [Prestadores]
+ *     summary: Remove prestador
+ */
+
+
 // Dados mockados
 let prestadores = [
     {

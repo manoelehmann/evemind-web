@@ -2,6 +2,42 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Visitantes
+ *   description: Controle de visitantes
+ */
+
+/**
+ * @swagger
+ * /visitantes:
+ *   get:
+ *     tags: [Visitantes]
+ *     summary: Lista visitantes
+ *
+ *   post:
+ *     tags: [Visitantes]
+ *     summary: Cadastra visitante
+ */
+
+/**
+ * @swagger
+ * /visitantes/{id}:
+ *   get:
+ *     tags: [Visitantes]
+ *     summary: Obtém visitante
+ *
+ *   put:
+ *     tags: [Visitantes]
+ *     summary: Atualiza visitante
+ *
+ *   delete:
+ *     tags: [Visitantes]
+ *     summary: Remove visitante
+ */
+
+
 // Dados mockados
 let visitantes = [
     {

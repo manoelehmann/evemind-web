@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Funcionários
+ *   description: Gestão de funcionários
+ */
+
+/**
+ * @swagger
+ * /funcionarios:
+ *   get:
+ *     tags: [Funcionários]
+ *     summary: Lista funcionários
+ *   post:
+ *     tags: [Funcionários]
+ *     summary: Cria funcionário
+ *
+ * /funcionarios/{id}:
+ *   get:
+ *     tags: [Funcionários]
+ *     summary: Obtém funcionário
+ *   put:
+ *     tags: [Funcionários]
+ *     summary: Atualiza funcionário
+ *   delete:
+ *     tags: [Funcionários]
+ *     summary: Remove funcionário
+ */
+
+
 // Dados mockados
 let funcionarios = [
     {

@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Grupos
+ *   description: Grupos e categorias
+ */
+
+/**
+ * @swagger
+ * /grupos:
+ *   get:
+ *     tags: [Grupos]
+ *     summary: Lista grupos
+ *   post:
+ *     tags: [Grupos]
+ *     summary: Cria grupo
+ *
+ * /grupos/{id}:
+ *   get:
+ *     tags: [Grupos]
+ *     summary: Obtém grupo
+ *   put:
+ *     tags: [Grupos]
+ *     summary: Atualiza grupo
+ *   delete:
+ *     tags: [Grupos]
+ *     summary: Remove grupo
+ */
+
+
 // Dados mockados
 let grupos = [
     {

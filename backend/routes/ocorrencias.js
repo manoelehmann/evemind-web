@@ -2,6 +2,36 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Ocorrências
+ *   description: Gestão de ocorrências
+ */
+
+/**
+ * @swagger
+ * /ocorrencias:
+ *   get:
+ *     tags: [Ocorrências]
+ *     summary: Lista ocorrências
+ *   post:
+ *     tags: [Ocorrências]
+ *     summary: Cria ocorrência
+ *
+ * /ocorrencias/{id}:
+ *   get:
+ *     tags: [Ocorrências]
+ *     summary: Obtém ocorrência
+ *   put:
+ *     tags: [Ocorrências]
+ *     summary: Atualiza ocorrência
+ *   delete:
+ *     tags: [Ocorrências]
+ *     summary: Remove ocorrência
+ */
+
+
 // Dados mockados para demonstração
 let ocorrencias = [
     {

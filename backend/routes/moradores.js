@@ -2,6 +2,85 @@
 const express = require('express');
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Moradores
+ *   description: Gestão de moradores
+ */
+
+/**
+ * @swagger
+ * /moradores:
+ *   get:
+ *     tags: [Moradores]
+ *     summary: Lista todos os moradores
+ *     responses:
+ *       200:
+ *         description: Lista retornada com sucesso
+ *
+ *   post:
+ *     tags: [Moradores]
+ *     summary: Cria um novo morador
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nome:
+ *                 type: string
+ *               apartamento:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               telefone:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Morador criado
+ */
+
+/**
+ * @swagger
+ * /moradores/{id}:
+ *   get:
+ *     tags: [Moradores]
+ *     summary: Obtém um morador pelo ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Morador encontrado
+ *
+ *   put:
+ *     tags: [Moradores]
+ *     summary: Atualiza um morador
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Morador atualizado
+ *
+ *   delete:
+ *     tags: [Moradores]
+ *     summary: Remove um morador
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Removido com sucesso
+ */
+
+
+
 // Dados mockados para demonstração
 let moradores = [
     {
